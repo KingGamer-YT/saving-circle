@@ -1,15 +1,33 @@
 $(document).ready(function() {
+    // Handle circle creation
     $('#create-circle-form').on('submit', function(event) {
         event.preventDefault();
         
         const circleName = $('#circle-name').val();
         const contributionAmount = $('#contribution-amount').val();
 
-        // Add circle and show notification
         addCircle(circleName, contributionAmount);
         showNotification(`Created circle: ${circleName} with a contribution of $${contributionAmount}`);
         
-        // Clear form inputs
+        $(this).trigger("reset");
+    });
+
+    // Handle logging contributions
+    $('#log-contribution-form').on('submit', function(event) {
+        event.preventDefault();
+
+        const selectedCircle = $('#select-circle').val();
+        const logAmount = parseFloat($('#log-amount').val());
+        const expectedAmount = parseFloat($('#select-circle option:selected').data('amount'));
+
+        if (logAmount !== expectedAmount) {
+            alert(`Error: The contribution amount must be exactly $${expectedAmount}.`);
+            return;
+        }
+
+        $('#log-message').text(`You have logged a contribution of $${logAmount} to ${selectedCircle}.`);
+        showNotification(`Logged contribution of $${logAmount} to ${selectedCircle}.`);
+
         $(this).trigger("reset");
     });
 
@@ -17,6 +35,7 @@ $(document).ready(function() {
         const circleList = $('#circleList');
         const circleItem = `<div class="notification-item"><h3>${name}</h3><p>Next Contribution: $${amount}</p></div>`;
         circleList.append(circleItem);
+        $('#select-circle').append(`<option value="${name}" data-amount="${amount}">${name}</option>`);
     }
 
     function showNotification(message) {
@@ -25,60 +44,64 @@ $(document).ready(function() {
         notificationList.append(notificationItem);
     }
 
-    // Sample Contribution Chart Data
+    const data = {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+        datasets: [{
+            label: 'Monthly Contributions',
+            data: [12, 19, 3, 5, 2, 3],
+            borderColor: 'rgba(40, 167, 69, 1)',
+            borderWidth: 2,
+            fill: false,
+            backgroundColor: 'rgba(40, 167, 69, 0.2)',
+        }]
+    };
+
     const ctx = document.getElementById('contributionChart').getContext('2d');
-    const contributionChart = new Chart(ctx, {
+    const ctxAdvanced = document.getElementById('contributionChartAdvanced').getContext('2d');
+    
+    let contributionChart = new Chart(ctx, {
         type: 'line',
-        data: {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-            datasets: [{
-                label: 'Monthly Contributions',
-                data: [12, 19, 3, 5, 2, 3],
-                borderColor: 'rgba(40, 167, 69, 1)',
-                borderWidth: 2,
-                fill: false,
-                backgroundColor: 'rgba(40, 167, 69, 0.2)',
-            }]
-        },
+        data: data,
         options: {
-            responsive: true,
             scales: {
                 y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: '#e9ecef',
-                    }
-                },
-                x: {
-                    grid: {
-                        color: '#e9ecef',
-                    }
+                    beginAtZero: true
                 }
             }
         }
     });
 
-    // Dark mode toggle
-    $('#toggle-dark-mode').on('click', function() {
-        $('body').toggleClass('dark-mode');
-        const modeText = $('body').hasClass('dark-mode') ? 'Light Mode' : 'Dark Mode';
-        $(this).text(modeText);
-        
-        // Update chart colors for dark mode
-        updateChartColors();
+    let contributionChartAdvanced = new Chart(ctxAdvanced, {
+        type: 'bar',
+        data: data,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
     });
 
-    function updateChartColors() {
-        const chart = Chart.getChart('contributionChart'); // Get the chart instance
-        if ($('body').hasClass('dark-mode')) {
-            chart.data.datasets[0].borderColor = 'rgba(255, 255, 255, 1)'; // White line for dark mode
-            chart.options.scales.y.grid.color = '#CCCCCC'; // Darker grid color
-            chart.options.scales.x.grid.color = '#CCCCCC'; // Darker grid color
-        } else {
-            chart.data.datasets[0].borderColor = 'rgba(40, 167, 69, 1)'; // Original line color
-            chart.options.scales.y.grid.color = '#CCCCCC'; // Original grid color
-            chart.options.scales.x.grid.color = '#CCCCCC'; // Original grid color
-        }
-        chart.update(); // Update the chart to apply changes
+    function updateCharts() {
+        // Generate random data for demonstration
+        data.datasets[0].data = data.datasets[0].data.map(() => Math.floor(Math.random() * 20));
+        
+        contributionChart.update();
+        contributionChartAdvanced.update();
     }
+
+    // Sync the charts and update every second
+    setInterval(updateCharts, 1000);
+
+    // Toggle layout functionality
+    $('#toggle-layout').on('click', function() {
+        $('#mainLayout').toggle();
+        $('#advancedLayout').toggle();
+    });
+
+    // Toggle dark mode functionality
+    $('#toggle-dark-mode').on('click', function() {
+        $('body').toggleClass('dark-mode');
+    });
 });
