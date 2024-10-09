@@ -1,0 +1,51 @@
+body {
+    background-color: #f8f9fa;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: none;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+#circleList, #notificationList {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    background: #e9f7ef;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background-color: #343a40;
+    color: #ffffff;
+}
+
+body.dark-mode .card {
+    background-color: #495057;
+    color: #ffffff;
+}
+
+body.dark-mode .notification-item {
+    background: #6c757d;
+}
