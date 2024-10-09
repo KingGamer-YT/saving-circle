@@ -49,3 +49,25 @@ body.dark-mode .card {
 body.dark-mode .notification-item {
     background: #6c757d;
 }
+@media (max-width: 768px) {
+    /* Ensure the chart is responsive on smaller screens */
+    #contributionChart {
+        transform: rotate(90)
+    }
+
+    .card {
+        padding: 1rem; /* Add padding for better spacing */
+    }
+
+    .card-header {
+        font-size: 1.25rem; /* Adjust font size for headers */
+    }
+
+    .notification-item {
+        font-size: 0.9rem; /* Adjust font size for notification items */
+    }
+
+    #circleList, #notificationList {
+        max-height: 200px; /* Adjust max height for lists on small screens */
+    }
+}
