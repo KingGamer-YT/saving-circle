@@ -42,7 +42,12 @@ body {
     border-radius: 5px;
     margin-bottom: 10px;
 }
-
+#log-message{
+    background: #e9f7ef;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
 .card {
     transition: box-shadow 0.3s;
 }

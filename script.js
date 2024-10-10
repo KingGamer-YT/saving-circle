@@ -1,4 +1,7 @@
 $(document).ready(function() {
+    // Sample data structure for circles
+    let circles = [];
+
     // Fade-in effect for specific elements
     $('#header').addClass('fade-in-from-above'); // Header fades in from above
     setTimeout(function() {
@@ -16,47 +19,103 @@ $(document).ready(function() {
         $('#footer').addClass('show-from-right'); // Show after delay
     }, 150);
 
+    // Populate the dropdown with circles
+    function populateCircleDropdown() {
+        const selectCircle = $('#select-circle');
+        selectCircle.empty(); // Clear existing options
+
+        // Create a default option
+        const defaultOption = $('<option>').val('').text('Select a circle');
+        selectCircle.append(defaultOption);
+
+        // Populate the dropdown with circles
+        circles.forEach(circle => {
+            const option = $('<option>').val(circle.id).data('amount', circle.goal).text(circle.name);
+            selectCircle.append(option);
+        });
+    }
+
     // Handle circle creation
     $('#create-circle-form').on('submit', function(event) {
         event.preventDefault();
         
         const circleName = $('#circle-name').val();
-        const contributionAmount = $('#contribution-amount').val();
+        const contributionAmount = parseFloat($('#contribution-amount').val());
 
-        addCircle(circleName, contributionAmount);
-        showNotification(`Created circle: ${circleName} with a contribution of $${contributionAmount}`);
+        // Add the new circle to the circles array
+        const newCircle = {
+            id: circles.length + 1, // Simple ID assignment
+            name: circleName,
+            goal: contributionAmount,
+            contributions: [],
+            totalContributed: contributionAmount // Initialize with contribution amount
+        };
+
+        circles.push(newCircle); // Update the circles array
+
+        addCircle(circleName, newCircle.totalContributed); // Pass the total contribution
+        showNotification(`Created circle: ${circleName} with a contribution goal of $${contributionAmount}`);
         
         $(this).trigger("reset");
+        populateCircleDropdown(); // Update dropdown after adding a circle
     });
 
     // Handle logging contributions
     $('#log-contribution-form').on('submit', function(event) {
         event.preventDefault();
 
-        const selectedCircle = $('#select-circle').val();
+        const selectedCircleId = $('#select-circle').val();
         const logAmount = parseFloat($('#log-amount').val());
-        const expectedAmount = parseFloat($('#select-circle option:selected').data('amount'));
-
-        if (logAmount !== expectedAmount) {
-            alert(`Error: The contribution amount must be exactly $${expectedAmount}.`);
+        
+        const selectedCircle = circles.find(circle => circle.id == selectedCircleId);
+        if (!selectedCircle) {
+            alert('Please select a valid circle.');
             return;
         }
 
-        $('#log-message').text(`You have logged a contribution of $${logAmount} to ${selectedCircle}.`);
-        showNotification(`Logged contribution of $${logAmount} to ${selectedCircle}.`);
+        // Check if the logged amount matches the designated amount
+        if (logAmount !== selectedCircle.goal) {
+            alert(`Error: The contribution amount must be exactly $${selectedCircle.goal}.`);
+            return;
+        }
+
+        // Update total contributed
+        selectedCircle.totalContributed += logAmount;
+        $('#log-message').text(`You have logged a contribution of $${logAmount} to ${selectedCircle.name}.`).show();
+
+        // Update the displayed total contributions
+        updateCircleContribution(selectedCircle.id, selectedCircle.totalContributed);
+
+        showNotification(`Logged contribution of $${logAmount} to ${selectedCircle.name}.`);
 
         $(this).trigger("reset");
     });
 
-    function addCircle(name, amount) {
+    function addCircle(name, total) {
         const circleList = $('#circleList');
-        const circleItem = `<div class="notification-item fade-in-from-below"><h3>${name}</h3><p>Next Contribution: $${amount}</p></div>`;
-        circleList.append(circleItem);
+        const circleItem = `<div class="notification-item fade-in-from-below"><h3>${name}</h3><p>Total Contributions: $${total}</p></div>`;
         
+        // Clear the "No circles yet" message if circles exist
+        if (circleList.find('.notification-item').length === 0) {
+            circleList.empty(); // Clear existing content to avoid duplicates
+        }
+
+        circleList.append(circleItem);
         // Triggering the show effect for the newly added item
         setTimeout(() => {
             circleList.children().last().addClass('show-from-below');
         }, 50); // Delay to allow the fade-in effect to start
+
+        // Check if there are any circles to display
+        if (circleList.children().length === 0) {
+            circleList.append('<p>No circles yet.</p>'); // Show message if empty
+        }
+    }
+
+    function updateCircleContribution(circleId, total) {
+        // Update the displayed total contributions for the specific circle
+        const circleItem = $('.notification-item').eq(circleId - 1);
+        circleItem.find('p').text(`Total Contributions: $${total}`);
     }
 
     function showNotification(message) {
@@ -64,10 +123,22 @@ $(document).ready(function() {
         const notificationItem = `<p class="notification-item fade-in-from-below">${message}</p>`;
         notificationList.append(notificationItem);
         
+        // Check if notifications exist and clear the "No notifications" message
+        if (notificationList.find('.notification-item').length === 1) {
+            notificationList.empty(); // Clear existing content
+        }
+        
+        notificationList.append(notificationItem);
+        
         // Triggering the show effect for the newly added notification
         setTimeout(() => {
             notificationList.children().last().addClass('show-from-below');
         }, 50); // Delay to allow the fade-in effect to start
+
+        // Check if there are any notifications to display
+        if (notificationList.children().length === 0) {
+            notificationList.append('<p>No notifications yet.</p>'); // Show message if empty
+        }
     }
 
     // Sample data for charts
