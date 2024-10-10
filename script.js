@@ -1,4 +1,21 @@
 $(document).ready(function() {
+    // Fade-in effect for specific elements
+    $('#header').addClass('fade-in-from-above'); // Header fades in from above
+    setTimeout(function() {
+        $('#header').addClass('show-from-above'); // Show after delay
+    }, 50);
+
+    $('#someElement').addClass('fade-in-from-left'); // Specific element fades in from left
+    setTimeout(function() {
+        $('#someElement').addClass('show-from-left'); // Show after delay
+    }, 100);
+
+    // Example for footer fading in from the right
+    $('#footer').addClass('fade-in-from-right'); // Footer fades in from right
+    setTimeout(function() {
+        $('#footer').addClass('show-from-right'); // Show after delay
+    }, 150);
+
     // Handle circle creation
     $('#create-circle-form').on('submit', function(event) {
         event.preventDefault();
@@ -33,17 +50,27 @@ $(document).ready(function() {
 
     function addCircle(name, amount) {
         const circleList = $('#circleList');
-        const circleItem = `<div class="notification-item"><h3>${name}</h3><p>Next Contribution: $${amount}</p></div>`;
+        const circleItem = `<div class="notification-item fade-in-from-below"><h3>${name}</h3><p>Next Contribution: $${amount}</p></div>`;
         circleList.append(circleItem);
-        $('#select-circle').append(`<option value="${name}" data-amount="${amount}">${name}</option>`);
+        
+        // Triggering the show effect for the newly added item
+        setTimeout(() => {
+            circleList.children().last().addClass('show-from-below');
+        }, 50); // Delay to allow the fade-in effect to start
     }
 
     function showNotification(message) {
         const notificationList = $('#notificationList');
-        const notificationItem = `<p class="notification-item">${message}</p>`;
+        const notificationItem = `<p class="notification-item fade-in-from-below">${message}</p>`;
         notificationList.append(notificationItem);
+        
+        // Triggering the show effect for the newly added notification
+        setTimeout(() => {
+            notificationList.children().last().addClass('show-from-below');
+        }, 50); // Delay to allow the fade-in effect to start
     }
 
+    // Sample data for charts
     const data = {
         labels: ['January', 'February', 'March', 'April', 'May', 'June'],
         datasets: [{

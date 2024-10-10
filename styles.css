@@ -1,4 +1,20 @@
+/* Fade-in Animation */
+.fade-in {
+    opacity: 0; /* Start invisible */
+    transition: opacity 0.5s ease-in; /* Transition for fade-in effect */
+    animation: fadeIn 0.5s forwards; /* Add animation */
+}
 
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px); /* Start below */
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0); /* End at original position */
+    }
+}
 
 body {
     background-color: #f8f9fa;
@@ -25,68 +41,78 @@ body {
     padding: 10px;
     border-radius: 5px;
     margin-bottom: 10px;
-    animation: fadeIn 0.5s;
 }
 
 .card {
-    transition: transform 0.3s, box-shadow 0.3s;
-    border: none;
-    margin-bottom: 20px; /* Reduce bottom margin between cards */
-    margin-top: 30px;
+    transition: box-shadow 0.3s;
 }
 
-.card-header {
-    padding: 15px; /* Adjust padding for card headers */
-}
-
-.card-body {
-    padding: 15px; /* Adjust padding for card bodies */
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Dark Mode Styles */
 body.dark-mode {
     background-color: #343a40;
-    color: #ffffff;
+    color: #f8f9fa;
 }
 
 body.dark-mode .card {
     background-color: #495057;
-    color: #ffffff;
 }
 
 body.dark-mode .notification-item {
     background: #6c757d;
 }
+.fade-in {
+    opacity: 0;
+    animation: fadeIn 1s forwards;
+}
 
-@media (max-width: 768px) {
-    /* Ensure the chart is responsive on smaller screens */
-    #contributionChart,
-    #contributionChartAdvanced {
-        transform: rotate(90);
-    }
+.fade-in.show {
+    opacity: 1;
+}
 
-    .card {
-        padding: 1rem; /* Add padding for better spacing */
-    }
+.fade-in:nth-child(1) {
+    animation-name: fadeInFromLeft;
+}
 
-    .card-header {
-        font-size: 1.25rem; /* Adjust font size for headers */
-    }
+.fade-in:nth-child(2) {
+    animation-name: fadeInFromRight;
+}
 
-    .notification-item {
-        font-size: 0.9rem; /* Adjust font size for notification items */
-    }
+.fade-in:nth-child(3) {
+    animation-name: fadeInFromTop;
+}
 
-    #circleList, #notificationList {
-        max-height: 200px; /* Adjust max height for lists on small screens */
-    }
+.fade-in:nth-child(4) {
+    animation-name: fadeInFromBottom;
+}
+
+.fade-in:nth-child(5) {
+    animation-name: fadeInFromLeft;
+}
+
+.fade-in:nth-child(6) {
+    animation-name: fadeInFromRight;
+}
+
+@keyframes fadeInFromLeft {
+    0% { opacity: 0; transform: translateX(-50px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInFromRight {
+    0% { opacity: 0; transform: translateX(50px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInFromTop {
+    0% { opacity: 0; transform: translateY(-50px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInFromBottom {
+    0% { opacity: 0; transform: translateY(50px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
