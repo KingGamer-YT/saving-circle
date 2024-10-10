@@ -3,155 +3,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Savings Circle Dashboard</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Savings Circle</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('download.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* Dark overlay */
+            z-index: 1; /* Position the overlay below the content */
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 20px;
+            z-index: 2; /* Bring the hero section above the overlay */
+            position: relative; /* Ensure it remains positioned above the overlay */
+            animation: fadeIn 1s forwards;
+            opacity: 0;
+            animation-delay: 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin: 20px 0;
+            color: #fff;
+            animation: slideIn 1s forwards;
+            opacity: 0;
+            animation-delay: 1s;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .description {
+            font-size: 1.25rem;
+            margin-bottom: 30px;
+            color: #fff;
+            animation: fadeIn 1s forwards;
+            opacity: 0;
+            animation-delay: 1.5s;
+        }
+
+        .btn {
+            background-color: rgba(0, 123, 255, 0.8);
+            color: #fff;
+            border: none;
+            padding: 15px 25px;
+            font-size: 1.25rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            margin: 10px;
+            animation: popIn 0.5s forwards;
+            opacity: 0;
+            position: relative;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .btn:hover {
+            background-color: rgba(0, 102, 204, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(0, 123, 255, 0.4);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 3; /* Ensure modal is above the overlay */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: #fff; /* White background for modal */
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            animation: modalIn 0.5s forwards;
+            opacity: 0;
+        }
+
+        @keyframes modalIn {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Input styling */
+        input[type="text"], input[type="email"], input[type="password"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: border-color 0.3s;
+            display: block; /* Ensure inputs are displayed properly */
+        }
+
+        input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
+            border-color: #007bff;
+        }
+
+        label {
+            font-weight: bold; /* Make labels bold */
+            display: block; /* Ensure labels take up space */
+            margin-top: 10px;
+            color: black;
+        }
+
+        /* Preloader styles */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: #333;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        /* Animation for preloader */
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
-    <header class="bg-success text-white text-center p-4">
-        <h1 class="display-4 font-weight-bold">Savings Circle Dashboard <i class="fas fa-piggy-bank"></i></h1>
-        <p class="lead">Manage your savings effortlessly and reach your financial goals!</p>
-        <button id="toggle-dark-mode" class="btn btn-light mt-3">Toggle Dark Mode</button>
-        <button id="toggle-layout" class="btn btn-light mt-3">Switch to Advanced Layout</button>
-    </header>
+    <div class="overlay"></div> <!-- Overlay -->
 
-    <main class="container mt-4">
-        <!-- Main Layout -->
-        <div id="mainLayout">
-            <div class="row">
-                <div class="col-md-6 mb-4">
-                    <div class="card shadow-lg">
-                        <div class="card-header">
-                            <h2>My Circles <i class="fas fa-users"></i></h2>
-                        </div>
-                        <div class="card-body" id="circleList">
-                            <p>No circles created yet!</p>
-                        </div>
-                    </div>
-                </div>
+    <div id="preloader">
+        <div class="loader"></div>
+        Loading...
+    </div>
 
-                <div class="col-md-6 mb-4">
-                    <div class="card shadow-lg">
-                        <div class="card-header">
-                            <h2>Create a New Circle <i class="fas fa-plus-circle"></i></h2>
-                        </div>
-                        <div class="card-body">
-                            <form id="create-circle-form">
-                                <div class="form-group">
-                                    <label for="circle-name">Circle Name:</label>
-                                    <input type="text" class="form-control" id="circle-name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="contribution-amount">Contribution Amount:</label>
-                                    <input type="number" class="form-control" id="contribution-amount" required>
-                                </div>
-                                <button type="submit" class="btn btn-success">Create Circle</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+    <div class="hero-section">
+        <h1 id="welcomeText">Welcome to Savings Circle</h1>
+        <p class="description">Join us in building a community of savers!</p>
+        <button class="btn" onclick="showRegisterModal()">Register</button>
+        <button class="btn" onclick="showLoginModal()">Login</button>
+    </div>
 
-                <div class="col-md-6 mb-4">
-                    <div class="card shadow-lg">
-                        <div class="card-header">
-                            <h2>User Profile <i class="fas fa-user"></i></h2>
-                        </div>
-                        <div class="card-body">
-                            <form id="profile-form">
-                                <div class="form-group">
-                                    <label for="username">Username:</label>
-                                    <input type="text" class="form-control" id="username" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="email">Email:</label>
-                                    <input type="email" class="form-control" id="email" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Update Profile</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-4">
-                    <div class="card shadow-lg">
-                        <div class="card-header">
-                            <h2>Notifications <i class="fas fa-bell"></i></h2>
-                        </div>
-                        <div class="card-body" id="notificationList">
-                            <p>No notifications.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-12 mb-4">
-                    <div class="card shadow-lg">
-                        <div class="card-header">
-                            <h2>Contribution Overview <i class="fas fa-chart-line"></i></h2>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="contributionChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- Modal for Register -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('registerModal')">&times;</span>
+            <h2 style="color: black;">Register</h2>
+            <form id="registerForm" onsubmit="return handleRegister(event)">
+                <label for="regUsername">Username:</label>
+                <input type="text" id="regUsername" required>
+                <label for="regEmail">Email:</label>
+                <input type="email" id="regEmail" required>
+                <label for="regPassword">Password:</label>
+                <input type="password" id="regPassword" required>
+                <button type="submit" class="btn">Submit</button>
+            </form>
         </div>
+    </div>
 
-        <!-- Advanced Layout -->
-        <div id="advancedLayout" style="display: none;">
-            <div class="row">
-                <div class="col-md-12 mb-4">
-                    <div class="card shadow-lg">
-                        <div class="card-header">
-                            <h2>Log Contributions & Invite Members <i class="fas fa-share-alt"></i></h2>
-                        </div>
-                        <div class="card-body">
-                            <form id="log-contribution-form">
-                                <div class="form-group">
-                                    <label for="select-circle">Select Circle:</label>
-                                    <select id="select-circle" class="form-control">
-                                        <option value="">Select a circle</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="log-amount">Contribution Amount:</label>
-                                    <input type="number" class="form-control" id="log-amount" required>
-                                </div>
-                                <button type="submit" class="btn btn-success">Log Contribution</button>
-                            </form>
-                            <form id="invite-member-form" class="mt-4">
-                                <div class="form-group">
-                                    <label for="invite-email">Invite Member Email:</label>
-                                    <input type="email" class="form-control" id="invite-email" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Send Invite</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-12 mb-4">
-                    <div class="card shadow-lg">
-                        <div class="card-header">
-                            <h2>Contribution Overview <i class="fas fa-chart-line"></i></h2>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="contributionChartAdvanced"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- Modal for Login -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('loginModal')">&times;</span>
+            <h2 style="color: black;">Login</h2>
+            <form id="loginForm" onsubmit="return handleLogin(event)">
+                <label for="loginUsername">Username:</label>
+                <input type="text" id="loginUsername" required>
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" required>
+                <button type="submit" class="btn">Submit</button>
+            </form>
         </div>
-    </main>
+    </div>
 
-    <footer class="text-center mt-4">
-        <p>&copy; 2024 Savings Circle. All rights reserved.</p>
-    </footer>
+    <script>
+        function showRegisterModal() {
+            document.getElementById('registerModal').style.display = "block";
+            document.querySelector('.modal-content').style.opacity = 0; // Reset opacity for animation
+            setTimeout(() => {
+                document.querySelector('.modal-content').style.opacity = 1; // Animate opacity
+            }, 50);
+        }
 
-    <script src="script.js"></script>
+        function showLoginModal() {
+            document.getElementById('loginModal').style.display = "block";
+            document.querySelector('.modal-content').style.opacity = 0; // Reset opacity for animation
+            setTimeout(() => {
+                document.querySelector('.modal-content').style.opacity = 1; // Animate opacity
+            }, 50);
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+        }
+
+        function handleRegister(event) {
+            event.preventDefault();
+            showPreloader();
+            setTimeout(() => {
+                closeModal('registerModal');
+                hidePreloader();
+                alert('Registration successful!'); // Placeholder for registration logic
+                window.location.href = 'dashboard.html'; // Redirect to dashboard after registration
+            }, 500); // Reduced time for quicker feedback
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            showPreloader();
+            setTimeout(() => {
+                closeModal('loginModal');
+                hidePreloader();
+                alert('Login successful!'); // Placeholder for login logic
+                window.location.href = 'dashboard.html'; // Redirect to dashboard after login
+            }, 500); // Reduced time for quicker feedback
+        }
+
+        function showPreloader() {
+            document.getElementById('preloader').style.display = 'flex';
+        }
+
+        function hidePreloader() {
+            document.getElementById('preloader').style.display = 'none';
+        }
+
+        // Close the modal when clicking outside of it
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                closeModal('registerModal');
+                closeModal('loginModal');
+            }
+        };
+    </script>
 </body>
 </html>

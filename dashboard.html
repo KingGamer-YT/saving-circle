@@ -3,82 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Dashboard - Savings Circle</title>
+    <title>Savings Circle Dashboard</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <header>
-        <h1>User Dashboard</h1>
-        <nav>
-            <ul>
-                <li><a href="#my-circles">My Circles</a></li>
-                <li><a href="#create-circle">Create Circle</a></li>
-                <li><a href="#profile">Profile</a></li>
-                <li><a href="#notifications">Notifications</a></li>
-            </ul>
-        </nav>
+    <header class="bg-success text-white text-center p-4">
+        <h1 class="display-4 font-weight-bold">Savings Circle Dashboard <i class="fas fa-piggy-bank"></i></h1>
+        <p class="lead">Manage your savings effortlessly and reach your financial goals!</p>
+        <button id="toggle-dark-mode" class="btn btn-light mt-3">Toggle Dark Mode</button>
+        <button id="toggle-layout" class="btn btn-light mt-3">Switch to Advanced Layout</button>
     </header>
-    
-    <main>
-        <section id="my-circles">
-            <h2>My Circles</h2>
-            <div class="circle-list">
-                <div class="circle-item">
-                    <h3>Circle Name</h3>
-                    <p>Members: 5</p>
-                    <p>Next Payout: $500</p>
-                    <button onclick="viewCircleDetails()">View Details</button>
+
+    <main class="container mt-4">
+        <!-- Main Layout -->
+        <div id="mainLayout">
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-lg">
+                        <div class="card-header">
+                            <h2>My Circles <i class="fas fa-users"></i></h2>
+                        </div>
+                        <div class="card-body" id="circleList">
+                            <p>No circles created yet!</p>
+                        </div>
+                    </div>
                 </div>
-                <!-- Add more circle items dynamically -->
+
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-lg">
+                        <div class="card-header">
+                            <h2>Create a New Circle <i class="fas fa-plus-circle"></i></h2>
+                        </div>
+                        <div class="card-body">
+                            <form id="create-circle-form">
+                                <div class="form-group">
+                                    <label for="circle-name">Circle Name:</label>
+                                    <input type="text" class="form-control" id="circle-name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="contribution-amount">Contribution Amount:</label>
+                                    <input type="number" class="form-control" id="contribution-amount" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="goal-amount">Goal Amount:</label>
+                                    <input type="number" class="form-control" id="goal-amount" required>
+                                </div>
+                                <button type="submit" class="btn btn-success">Create Circle</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-lg">
+                        <div class="card-header">
+                            <h2>User Profile <i class="fas fa-user"></i></h2>
+                        </div>
+                        <div class="card-body">
+                            <form id="profile-form">
+                                <div class="form-group">
+                                    <label for="username">Username:</label>
+                                    <input type="text" class="form-control" id="username" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email:</label>
+                                    <input type="email" class="form-control" id="email" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Update Profile</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-lg">
+                        <div class="card-header">
+                            <h2>Notifications <i class="fas fa-bell"></i></h2>
+                        </div>
+                        <div class="card-body" id="notificationList">
+                            <p>No notifications.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12 mb-4">
+                    <div class="card shadow-lg">
+                        <div class="card-header">
+                            <h2>Contribution Overview <i class="fas fa-chart-line"></i></h2>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="contributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </section>
+        </div>
 
-        <section id="create-circle">
-            <h2>Create a New Circle</h2>
-            <form id="create-circle-form">
-                <label for="circle-name">Circle Name:</label>
-                <input type="text" id="circle-name" name="circle-name" required>
+        <!-- Advanced Layout -->
+        <div id="advancedLayout" style="display: none;">
+            <div class="row">
+                <div class="col-md-12 mb-4">
+                    <div class="card shadow-lg">
+                        <div class="card-header">
+                            <h2>Log Contributions & Invite Members <i class="fas fa-share-alt"></i></h2>
+                        </div>
+                        <div class="card-body">
+                            <form id="log-contribution-form">
+                                <div class="form-group">
+                                    <label for="select-circle">Select Circle:</label>
+                                    <select id="select-circle" class="form-control">
+                                        <option value="">Select a circle</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="log-amount">Contribution Amount:</label>
+                                    <input type="number" class="form-control" id="log-amount" required>
+                                </div>
+                                <button type="submit" class="btn btn-success">Log Contribution</button>
+                            </form>
+                            <form id="invite-member-form" class="mt-4">
+                                <div class="form-group">
+                                    <label for="invite-email">Invite Member Email:</label>
+                                    <input type="email" class="form-control" id="invite-email" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Send Invite</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
-                <label for="contribution-amount">Contribution Amount:</label>
-                <input type="number" id="contribution-amount" name="contribution-amount" required>
-
-                <label for="contribution-frequency">Contribution Frequency:</label>
-                <select id="contribution-frequency" name="contribution-frequency">
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                </select>
-
-                <button type="submit">Create Circle</button>
-            </form>
-        </section>
-
-        <section id="profile">
-            <h2>User Profile</h2>
-            <form id="profile-form">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
-
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
-
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-
-                <button type="submit">Update Profile</button>
-            </form>
-        </section>
-
-        <section id="notifications">
-            <h2>Notifications</h2>
-            <div class="notification-list">
-                <p>You have a new contribution!</p>
-                <p>Your circle payout is scheduled for next week.</p>
-                <!-- Add more notifications dynamically -->
+                <div class="col-md-12 mb-4">
+                    <div class="card shadow-lg">
+                        <div class="card-header">
+                            <h2>Contribution Overview <i class="fas fa-chart-line"></i></h2>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="contributionChartAdvanced"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </section>
+        </div>
     </main>
 
-    <footer>
+    <footer class="text-center mt-4">
         <p>&copy; 2024 Savings Circle. All rights reserved.</p>
     </footer>
 
