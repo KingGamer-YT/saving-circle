@@ -7,8 +7,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
+<style>
+    /* Your existing CSS styles remain unchanged */
+    /* ... */
+</style>
 <body>
-    <div class="overlay"></div> <!-- Overlay -->
+    <div class="overlay"></div>
 
     <div id="preloader">
         <div class="loader"></div>
@@ -50,46 +54,51 @@
                 <label for="loginPassword">Password:</label>
                 <input type="password" id="loginPassword" required>
                 <button type="submit" class="btn">Submit</button>
-                <p class="forgot-password" onclick="showforgotpassword()">forgot password?</p>
+                <p class="forgot-password" onclick="showForgotPassword()">Forgot password?</p>
             </form>
         </div>
     </div>
-    <div id="forgotpassword" class="modal">
+
+    <div id="forgotPasswordModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('forgotpassword')">&times;</span>
-            <h2 style="color: black;">Create new Password</h2>
-            <form id="loginForm" onsubmit="closeModal('forgotpassword')">
-                <label for="loginUsername">Username:</label>
-                <input type="text" id="loginUsername" required>
-                <label for="loginPassword">new Password:</label>
-                <input type="password" id="loginPassword" required>
-                <label for="loginPassword">Confirm Password:</label>
-                <input type="password" id="loginPassword" required>
-                <button type="submt" class="btn">Submit</button>
+            <span class="close" onclick="closeModal('forgotPasswordModal')">&times;</span>
+            <h2 style="color: black;">Reset Password</h2>
+            <form id="forgotPasswordForm" onsubmit="return handleForgotPassword(event)">
+                <label for="forgotUsername">Username:</label>
+                <input type="text" id="forgotUsername" required>
+                <label for="newPassword">New Password:</label>
+                <input type="password" id="newPassword" required>
+                <label for="confirmPassword">Confirm Password:</label>
+                <input type="password" id="confirmPassword" required>
+                <button type="submit" class="btn">Submit</button>
             </form>
         </div>
     </div>
+
     <script>
         function showRegisterModal() {
             document.getElementById('registerModal').style.display = "block";
-            document.querySelector('.modal-content').style.opacity = 0; // Reset opacity for animation
-            setTimeout(() => {
-                document.querySelector('.modal-content').style.opacity = 1; // Animate opacity
-            }, 50);
+            resetModalOpacity();
         }
-        function showforgotpassword(){
-            document.getElementById('forgotpassword').style.display = "block";
-            document.querySelector('.modal-content').style.opacity = 0; // Reset opacity for animation
-            setTimeout(() => {
-                document.querySelector('.modal-content').style.opacity = 1; // Animate opacity
-            }, 50);
+
+        function showForgotPassword() {
+            document.getElementById('forgotPasswordModal').style.display = "block";
+            resetModalOpacity();
         }
+
         function showLoginModal() {
             document.getElementById('loginModal').style.display = "block";
-            document.querySelector('.modal-content').style.opacity = 0; // Reset opacity for animation
-            setTimeout(() => {
-                document.querySelector('.modal-content').style.opacity = 1; // Animate opacity
-            }, 50);
+            resetModalOpacity();
+        }
+
+        function resetModalOpacity() {
+            const modalContents = document.querySelectorAll('.modal-content');
+            modalContents.forEach(content => {
+                content.style.opacity = 0; // Reset opacity for animation
+                setTimeout(() => {
+                    content.style.opacity = 1; // Animate opacity
+                }, 50);
+            });
         }
 
         function closeModal(modalId) {
@@ -98,24 +107,66 @@
 
         function handleRegister(event) {
             event.preventDefault();
+            const password = document.getElementById('regPassword').value;
+
+            if (!validatePassword(password)) {
+                alert("Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one number.");
+                return false;
+            }
+
             showPreloader();
             setTimeout(() => {
                 closeModal('registerModal');
                 hidePreloader();
-                // Placeholder for registration logic
+                alert("Registration successful!");
                 window.location.href = 'dashboard.html'; // Redirect to dashboard after registration
-            }, 3000); // Reduced time for quicker feedback
+            }, 3000);
         }
 
         function handleLogin(event) {
             event.preventDefault();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!validatePassword(password)) {
+                alert("Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one number.");
+                return false;
+            }
+
             showPreloader();
             setTimeout(() => {
                 closeModal('loginModal');
                 hidePreloader();
-    
+                alert("Login successful!");
                 window.location.href = 'dashboard.html'; // Redirect to dashboard after login
-            }, 3000); // Reduced time for quicker feedback
+            }, 3000);
+        }
+
+        function handleForgotPassword(event) {
+            event.preventDefault();
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (newPassword !== confirmPassword) {
+                alert("Passwords do not match.");
+                return false;
+            }
+
+            if (!validatePassword(newPassword)) {
+                alert("New password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one number.");
+                return false;
+            }
+
+            showPreloader();
+            setTimeout(() => {
+                closeModal('forgotPasswordModal');
+                hidePreloader();
+                alert("Password reset successfully!");
+            }, 3000);
+        }
+
+        function validatePassword(password) {
+            const passwordPattern = /^(?=.[a-z])(?=.[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+            return passwordPattern.test(password);
         }
 
         function showPreloader() {
@@ -126,13 +177,11 @@
             document.getElementById('preloader').style.display = 'none';
         }
 
-        // Close the modal when clicking outside of it
         window.onclick = function(event) {
             if (event.target.classList.contains('modal')) {
                 closeModal('registerModal');
                 closeModal('loginModal');
-                closeModal('forgotpassword')
-
+                closeModal('forgotPasswordModal');
             }
         };
     </script>

@@ -203,3 +203,22 @@ $(document).ready(function() {
         $('body').toggleClass('dark-mode');
     });
 });
+//save circles to local storage
+function saveCirclesToLocalStorage(){
+    localStorage.setItem('circles', JSON.stringify(circles));
+}
+
+//load circles 
+$('#register-form').on('submit', function(event) {
+    event.preventDefault();
+
+    const email = $('#register-email').val();
+    const password = $('#register-password').val();
+
+    // Save user credentials in local storage
+    const userData = { email, password };
+    localStorage.setItem(email, JSON.stringify(userData)); // Use email as key
+
+    alert('Registration successful! You can now log in.');
+    $(this).trigger("reset");
+});
