@@ -5,197 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Savings Circle</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: url('download.jpeg') no-repeat center center fixed;
-            background-size: cover;
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5); /* Dark overlay */
-            z-index: 1; /* Position the overlay below the content */
-        }
-
-        .hero-section {
-            text-align: center;
-            padding: 20px;
-            z-index: 2; /* Bring the hero section above the overlay */
-            position: relative; /* Ensure it remains positioned above the overlay */
-            animation: fadeIn 1s forwards;
-            opacity: 0;
-            animation-delay: 0.5s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        h1 {
-            font-size: 3rem;
-            margin: 20px 0;
-            color: #fff;
-            animation: slideIn 1s forwards;
-            opacity: 0;
-            animation-delay: 1s;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .description {
-            font-size: 1.25rem;
-            margin-bottom: 30px;
-            color: #fff;
-            animation: fadeIn 1s forwards;
-            opacity: 0;
-            animation-delay: 1.5s;
-        }
-
-        .btn {
-            background-color: rgba(0, 123, 255, 0.8);
-            color: #fff;
-            border: none;
-            padding: 15px 25px;
-            font-size: 1.25rem;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-            margin: 10px;
-            animation: popIn 0.5s forwards;
-            opacity: 0;
-            position: relative;
-        }
-
-        @keyframes popIn {
-            from { transform: scale(0); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .btn:hover {
-            background-color: rgba(0, 102, 204, 0.8);
-            transform: scale(1.05);
-            box-shadow: 0 4px 20px rgba(0, 123, 255, 0.4);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 3; /* Ensure modal is above the overlay */
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background-color: #fff; /* White background for modal */
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 400px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            animation: modalIn 0.5s forwards;
-            opacity: 0;
-        }
-
-        @keyframes modalIn {
-            from { transform: translateY(-30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        /* Input styling */
-        input[type="text"], input[type="email"], input[type="password"] {
-            width: calc(100% - 20px);
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            transition: border-color 0.3s;
-            display: block; /* Ensure inputs are displayed properly */
-        }
-
-        input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
-            border-color: #007bff;
-        }
-
-        label {
-            font-weight: bold; /* Make labels bold */
-            display: block; /* Ensure labels take up space */
-            margin-top: 10px;
-            color: black;
-        }
-
-        /* Preloader styles */
-        #preloader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.8);
-            z-index: 9999;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            color: #333;
-            animation: fadeIn 0.5s forwards;
-        }
-
-        /* Animation for preloader */
-        .loader {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="overlay"></div> <!-- Overlay -->
@@ -240,10 +50,25 @@
                 <label for="loginPassword">Password:</label>
                 <input type="password" id="loginPassword" required>
                 <button type="submit" class="btn">Submit</button>
+                <p class="forgot-password" onclick="showforgotpassword()">forgot password?</p>
             </form>
         </div>
     </div>
-
+    <div id="forgotpassword" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('forgotpassword')">&times;</span>
+            <h2 style="color: black;">Create new Password</h2>
+            <form id="loginForm" onsubmit="closeModal('forgotpassword')">
+                <label for="loginUsername">Username:</label>
+                <input type="text" id="loginUsername" required>
+                <label for="loginPassword">new Password:</label>
+                <input type="password" id="loginPassword" required>
+                <label for="loginPassword">Confirm Password:</label>
+                <input type="password" id="loginPassword" required>
+                <button type="submt" class="btn">Submit</button>
+            </form>
+        </div>
+    </div>
     <script>
         function showRegisterModal() {
             document.getElementById('registerModal').style.display = "block";
@@ -252,7 +77,13 @@
                 document.querySelector('.modal-content').style.opacity = 1; // Animate opacity
             }, 50);
         }
-
+        function showforgotpassword(){
+            document.getElementById('forgotpassword').style.display = "block";
+            document.querySelector('.modal-content').style.opacity = 0; // Reset opacity for animation
+            setTimeout(() => {
+                document.querySelector('.modal-content').style.opacity = 1; // Animate opacity
+            }, 50);
+        }
         function showLoginModal() {
             document.getElementById('loginModal').style.display = "block";
             document.querySelector('.modal-content').style.opacity = 0; // Reset opacity for animation
@@ -300,6 +131,8 @@
             if (event.target.classList.contains('modal')) {
                 closeModal('registerModal');
                 closeModal('loginModal');
+                closeModal('forgotpassword')
+
             }
         };
     </script>
