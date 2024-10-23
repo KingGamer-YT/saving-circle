@@ -15,6 +15,24 @@
         transform: translateY(0); /* End at original position */
     }
 }
+.notification-item {
+    position: relative; /* Make the item relative for absolute positioning of the icon */
+    margin-bottom: 15px; /* Space between circle items */
+}
+
+.delete-icon {
+    font-size: 0.7em; /* Make the icon smaller */
+    position: absolute; /* Position it absolutely */
+    top: 10px; /* Align to the top */
+    right: 10px; /* Align to the right */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    color: #4c4c4c; /* Change the color of the delete icon */
+    opacity: 0.5;
+}
+
+.delete-icon:hover {
+    color: #4fd848; /* Darker red on hover */
+}
 
 body {
     background-color: #f8f9fa;

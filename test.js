@@ -1,7 +1,7 @@
 $(document).ready(function() {
     // Sample data structure for circles
     let circles = [];
-    const userId = 'user123'; // Replace this with actual user ID after login
+    const userId = localStorage.getItem('userId'); // Get the actual user ID after login
 
     // Load circles from local storage if they exist
     function loadCirclesFromLocalStorage() {
@@ -10,7 +10,7 @@ $(document).ready(function() {
             circles = JSON.parse(storedCircles);
             populateCircleDropdown();
             circles.forEach(circle => {
-                addCircle(circle.name, circle.totalContributed);
+                addCircle(circle.name, circle.totalContributed, circle.numberOfPeople);
             });
         }
     }
@@ -59,6 +59,7 @@ $(document).ready(function() {
         
         const circleName = $('#circle-name').val();
         const contributionAmount = parseFloat($('#contribution-amount').val());
+        const numberOfPeople = parseInt($('#number-of-people').val());
 
         // Add the new circle to the circles array
         const newCircle = {
@@ -66,14 +67,15 @@ $(document).ready(function() {
             name: circleName,
             goal: contributionAmount,
             contributions: [],
-            totalContributed: contributionAmount // Initialize with contribution amount
+            totalContributed: contributionAmount, // Initialize with contribution amount
+            numberOfPeople: numberOfPeople // Initialize with number of people
         };
 
         circles.push(newCircle); // Update the circles array
         saveCirclesToLocalStorage(); // Save to local storage
 
-        addCircle(circleName, newCircle.totalContributed); // Pass the total contribution
-        showNotification(`Created circle: ${circleName} with a contribution goal of $${contributionAmount}`);
+        addCircle(circleName, newCircle.totalContributed, numberOfPeople); // Pass the total contribution and number of people
+        showNotification(`Created circle: ${circleName} with a contribution goal of $${contributionAmount} and ${numberOfPeople} people`);
         
         $(this).trigger("reset");
         populateCircleDropdown(); // Update dropdown after adding a circle
@@ -103,17 +105,17 @@ $(document).ready(function() {
         $('#log-message').text(`You have logged a contribution of $${logAmount} to ${selectedCircle.name}.`).show();
 
         // Update the displayed total contributions
-        updateCircleContribution(selectedCircle.id, selectedCircle.totalContributed);
+        updateCircleContribution(selectedCircle.id, selectedCircle.totalContributed, selectedCircle.numberOfPeople);
         saveCirclesToLocalStorage(); // Save to local storage
 
         showNotification(`Logged contribution of $${logAmount} to ${selectedCircle.name}.`);
 
         $(this).trigger("reset");
     });
-
-    function addCircle(name, total) {
+    
+    function addCircle(name, total, numberOfPeople) {
         const circleList = $('#circleList');
-        const circleItem = `<div class="notification-item fade-in-from-below"><h3>${name}</h3><p>Total Contributions: $${total}</p></div>`;
+        const circleItem = `<div class="notification-item fade-in-from-below"><h3>${name}</h3><p>Total Contributions: $${total}</p><p>Number of People: ${numberOfPeople}</p></div>`;
         
         // Clear the "No circles yet" message if circles exist
         if (circleList.find('.notification-item').length === 0) {
@@ -132,10 +134,11 @@ $(document).ready(function() {
         }
     }
 
-    function updateCircleContribution(circleId, total) {
+    function updateCircleContribution(circleId, total, numberOfPeople) {
         // Update the displayed total contributions for the specific circle
         const circleItem = $('.notification-item').eq(circleId - 1);
-        circleItem.find('p').text(`Total Contributions: $${total}`);
+        circleItem.find('p').eq(0).text(`Total Contributions: $${total}`);
+        circleItem.find('p').eq(1).text(`Number of People: ${numberOfPeople}`);
     }
 
     function showNotification(message) {
@@ -225,4 +228,4 @@ $(document).ready(function() {
 
     // Load circles on page load
     loadCirclesFromLocalStorage();
-});
+}); 
