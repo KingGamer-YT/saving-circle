@@ -73,127 +73,148 @@
     </div>
 
     <script>
-        function showRegisterModal() {
-            document.getElementById('registerModal').style.display = "block";
-        }
+  function showRegisterModal() {
+    document.getElementById('registerModal').style.display = "block";
+}
 
-        function showForgotPassword() {
-            document.getElementById('forgotpassword').style.display = "block";
-        }
+function showForgotPassword() {
+    document.getElementById('forgotpassword').style.display = "block";
+}
 
-        function showLoginModal() {
-            document.getElementById('loginModal').style.display = "block";
-        }
+function showLoginModal() {
+    document.getElementById('loginModal').style.display = "block";
+}
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = "none";
-        }
+// Function to check if user is logged in
+function checkLoginStatus() {
+    const loggedInUser = localStorage.getItem('loggedInUser'); // Check if user is logged in
+    if (loggedInUser) {
+        // If logged in, redirect to dashboard
+        window.location.href = "dashboard.html";
+    }
+}
 
-        function handleRegister(event) {
-            event.preventDefault();
-            const username = document.getElementById('regUsername').value;
-            const email = document.getElementById('regEmail').value;
-            const password = document.getElementById('regPassword').value;
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = "none";
+}
 
-            if (!isValidPassword(password)) {
-                alert('Password must be at least 6 characters long and contain at least one number and one uppercase letter.');
-                return false;
-            }
+function handleRegister(event) {
+    event.preventDefault();
+    const username = document.getElementById('regUsername').value;
+    const email = document.getElementById('regEmail').value;
+    const password = document.getElementById('regPassword').value;
 
-            // Store user data in localStorage with a default circle
-            const userData = {
-                username: username,
-                email: email,
-                password: password,
-                circles: [{ name: "Default Circle", contributions: [] }] // Default circle
-            };
-            localStorage.setItem(username, JSON.stringify(userData));
+    if (!isValidPassword(password)) {
+        alert('Password must be at least 6 characters long and contain at least one number and one uppercase letter.');
+        return false;
+    }
 
-            showPreloader();
-            setTimeout(() => {
-                alert('Registration successful!'); // Alert for successful registration
-                closeModal('registerModal');
-                hidePreloader();
-                window.location.href = "dashboard.html"; // Redirect to the dashboard
-            }, 3000);
-        }
+    // Check if the username already exists
+    if (localStorage.getItem(username)) {
+        alert('Username is already taken. Please choose a different username.');
+        return false; // Prevent account creation
+    }
 
-        function handleLogin(event) {
-            event.preventDefault();
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
+    // Store user data in localStorage with a default circle
+    const userData = {
+        username: username,
+        email: email,
+        password: password,
+        circles: [{ name: "Default Circle", contributions: [] }] // Default circle
+    };
+    localStorage.setItem(username, JSON.stringify(userData));
 
-            const storedUserData = JSON.parse(localStorage.getItem(username));
+    showPreloader();
+    setTimeout(() => {
+        alert('Registration successful!'); // Alert for successful registration
+        closeModal('registerModal');
+        hidePreloader();
+        localStorage.setItem('loggedInUser', username); // Store logged-in username
+        window.location.href = "dashboard.html"; // Redirect to the dashboard
+    }, 3000);
+}
 
-            if (storedUserData && storedUserData.password === password) {
-                localStorage.setItem('loggedInUser', username); // Store logged-in username
-                showPreloader();
-                setTimeout(() => {
-                    alert('Login successful!'); // Alert for successful login
-                    closeModal('loginModal');
-                    hidePreloader();
-                    window.location.href = "dashboard.html"; // Redirect to the dashboard
-                }, 3000);
-            } else {
-                alert('Invalid username or password.'); // Alert for invalid login
-            }
-        }
+function handleLogin(event) {
+    event.preventDefault();
+    const username = document.getElementById('loginUsername').value;
+    const password = document.getElementById('loginPassword').value;
 
-        function handleForgotPassword(event) {
-            event.preventDefault();
-            const username = document.getElementById('forgotUsername').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
+    const storedUserData = JSON.parse(localStorage.getItem(username));
 
-            if (newPassword !== confirmPassword) {
-                alert('Passwords do not match!');
-                return false;
-            }
+    if (storedUserData && storedUserData.password === password) {
+        localStorage.setItem('loggedInUser', username); // Store logged-in username
+        showPreloader();
+        setTimeout(() => {
+            alert('Login successful!'); // Alert for successful login
+            closeModal('loginModal');
+            hidePreloader();
+            window.location.href = "dashboard.html"; // Redirect to the dashboard
+        }, 3000);
+    } else {
+        alert('Invalid username or password.'); // Alert for invalid login
+    }
+}
 
-            const storedUserData = JSON.parse(localStorage.getItem(username));
+function handleForgotPassword(event) {
+    event.preventDefault();
+    const username = document.getElementById('forgotUsername').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
 
-            if (storedUserData) {
-                storedUserData.password = newPassword; // Update password
-                localStorage.setItem(username, JSON.stringify(storedUserData));
-                showPreloader();
-                setTimeout(() => {
-                    alert('Password reset successful!'); // Alert for successful password reset
-                    closeModal('forgotpassword');
-                    hidePreloader();
-                }, 3000);
-            } else {
-                alert('User not found!'); // Alert for user not found
-            }
-        }
+    if (newPassword !== confirmPassword) {
+        alert('Passwords do not match!');
+        return false;
+    }
 
-        function isValidPassword(password) {
-            return password.length >= 6 && /[A-Z]/.test(password) && /\d/.test(password);
-        }
+    const storedUserData = JSON.parse(localStorage.getItem(username));
 
-        function suggestPassword() {
-            const suggestion = Math.random().toString(36).slice(-8) + "1A"; // Simple suggestion
-            document.getElementById('passwordSuggestion').innerText = "Suggested Password: " + suggestion;
-        }
+    if (storedUserData) {
+        storedUserData.password = newPassword; // Update password
+        localStorage.setItem(username, JSON.stringify(storedUserData));
+        showPreloader();
+        setTimeout(() => {
+            alert('Password reset successful!'); // Alert for successful password reset
+            closeModal('forgotpassword');
+            hidePreloader();
+        }, 3000);
+    } else {
+        alert('User not found!'); // Alert for user not found
+    }
+}
 
-        function showPreloader() {
-            document.getElementById('preloader').style.display = 'flex';
-        }
+function isValidPassword(password) {
+    return password.length >= 6 && /[A-Z]/.test(password) && /\d/.test(password);
+}
 
-        function hidePreloader() {
-            document.getElementById('preloader').style.display = 'none';
-        }
+function suggestPassword() {
+    const suggestion = Math.random().toString(36).slice(-8) + "1A"; // Simple suggestion
+    document.getElementById('passwordSuggestion').innerText = "Suggested Password: " + suggestion;
+}
 
-        // Close the modal when clicking outside of it
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                closeModal('registerModal');
-                closeModal('loginModal');
-                closeModal('forgotpassword');
-            }
-        };
+function showPreloader() {
+    document.getElementById('preloader').style.display = 'flex';
+}
 
-        // Show password suggestion on input
-        document.getElementById('regPassword').addEventListener('focus', suggestPassword);
+function hidePreloader() {
+    document.getElementById('preloader').style.display = 'none';
+}
+
+// Close the modal when clicking outside of it
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+        closeModal('registerModal');
+        closeModal('loginModal');
+        closeModal('forgotpassword');
+    }
+};
+
+// Show password suggestion on input
+document.getElementById('regPassword').addEventListener('focus', suggestPassword);
+
+// Check login status when the page loads
+checkLoginStatus();
+
+
     </script>
 </body>
 </html>

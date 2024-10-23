@@ -1,6 +1,6 @@
 $(document).ready(function() {
     let circles = [];
-    const userId = localStorage.getItem('userId');
+    const userId = localStorage.getItem('loggedInUser');
 
     function loadCirclesFromLocalStorage() {
         const storedCircles = localStorage.getItem(`circles_${userId}`);
@@ -12,7 +12,23 @@ $(document).ready(function() {
             });
         }
     }
-
+    document.getElementById('logoutButton').addEventListener('click', function() {
+        // Clear user session or token
+        localStorage.removeItem('loggedInUser'); // Assuming you store the token in localStorage
+      
+        // Redirect to login page
+        window.location.href = 'index.html';
+      });
+      function checkLoginStatus() {
+        const loggedInUser = localStorage.getItem('loggedInUser'); // Check if user is logged in
+        if (!loggedInUser) {
+            window.location.href = "index.html"; // Redirect to the login page if not logged in
+        }
+    }
+    
+    // Call this function on page load to check if the user is logged in
+    window.onload = checkLoginStatus;
+    
     function saveCirclesToLocalStorage() {
         localStorage.setItem(`circles_${userId}`, JSON.stringify(circles));
     }
