@@ -134,7 +134,7 @@ $(document).ready(function() {
         circleList.find('.delete-circle').off('click').on('click', function() {
             const circleName = $(this).closest('.notification-item').find('h3').text().trim();
             $(this).closest('.notification-item').remove();
-            // Remove the circle from the circles array
+         // Remove the circle from the circles array
             circles = circles.filter(circle => circle.name !== circleName);
             saveCirclesToLocalStorage();
             showNotification(`Deleted circle: ${circleName}.`);
