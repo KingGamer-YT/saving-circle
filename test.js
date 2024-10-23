@@ -1,7 +1,7 @@
 $(document).ready(function() {
     // Sample data structure for circles
     let circles = [];
-    const userId = localStorage.getItem('userId'); // Get the actual user ID after login
+    const userId = 'user123'; // Replace this with actual user ID after login
 
     // Load circles from local storage if they exist
     function loadCirclesFromLocalStorage() {
