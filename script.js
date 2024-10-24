@@ -1,7 +1,10 @@
 $(document).ready(function() {
+    // Initialize an empty array to hold circle data
     let circles = [];
+    // Get the logged-in user's ID from localStorage
     const userId = localStorage.getItem('loggedInUser');
 
+    // Function to load circles from localStorage
     function loadCirclesFromLocalStorage() {
         const storedCircles = localStorage.getItem(`circles_${userId}`);
         if (storedCircles) {
@@ -12,27 +15,30 @@ $(document).ready(function() {
             });
         }
     }
+
+    // Event listener for logout button
     document.getElementById('logoutButton').addEventListener('click', function() {
-        // Clear user session or token
-        localStorage.removeItem('loggedInUser'); // Assuming you store the token in localStorage
-      
-        // Redirect to login page
-        window.location.href = 'index.html';
-      });
-      function checkLoginStatus() {
-        const loggedInUser = localStorage.getItem('loggedInUser'); // Check if user is logged in
+        localStorage.removeItem('loggedInUser'); // Remove user session
+        window.location.href = 'index.html'; // Redirect to login page
+    });
+
+    // Function to check login status
+    function checkLoginStatus() {
+        const loggedInUser = localStorage.getItem('loggedInUser');
         if (!loggedInUser) {
-            window.location.href = "index.html"; // Redirect to the login page if not logged in
+            window.location.href = "index.html"; // Redirect to login page if not logged in
         }
     }
-    
-    // Call this function on page load to check if the user is logged in
+
+    // Check login status on page load
     window.onload = checkLoginStatus;
-    
+
+    // Function to save circles to localStorage
     function saveCirclesToLocalStorage() {
         localStorage.setItem(`circles_${userId}`, JSON.stringify(circles));
     }
 
+    // Add fade-in animations to elements
     $('#header').addClass('fade-in-from-above');
     setTimeout(function() {
         $('#header').addClass('show-from-above');
@@ -48,6 +54,7 @@ $(document).ready(function() {
         $('#footer').addClass('show-from-right');
     }, 150);
 
+    // Function to populate the circle dropdown menu
     function populateCircleDropdown() {
         const selectCircle = $('#select-circle');
         selectCircle.empty();
@@ -61,6 +68,7 @@ $(document).ready(function() {
         });
     }
 
+    // Event listener for circle creation form submission
     $('#create-circle-form').on('submit', function(event) {
         event.preventDefault();
 
@@ -93,6 +101,7 @@ $(document).ready(function() {
         populateCircleDropdown();
     });
 
+    // Event listener for logging contributions
     $('#log-contribution-form').on('submit', function(event) {
         event.preventDefault();
 
@@ -121,6 +130,7 @@ $(document).ready(function() {
         $(this).trigger("reset");
     });
     
+    // Function to add a circle to the display list
     function addCircle(name, total, numberOfPeople, frequency) {
         const circleList = $('#circleList');
         const circleItem = `
@@ -150,19 +160,21 @@ $(document).ready(function() {
         circleList.find('.delete-circle').off('click').on('click', function() {
             const circleName = $(this).closest('.notification-item').find('h3').text().trim();
             $(this).closest('.notification-item').remove();
-         // Remove the circle from the circles array
+            // Remove the circle from the circles array
             circles = circles.filter(circle => circle.name !== circleName);
             saveCirclesToLocalStorage();
             showNotification(`Deleted circle: ${circleName}.`);
         });
     }
 
+    // Function to update circle contribution details
     function updateCircleContribution(circleId, total, numberOfPeople) {
         const circleItem = $('.notification-item').eq(circleId - 1);
         circleItem.find('p').eq(0).text(`Total Contributions: $${total}`);
         circleItem.find('p').eq(1).text(`Number of People: ${numberOfPeople}`);
     }
 
+    // Function to show notifications
     function showNotification(message) {
         const notificationList = $('#notificationList');
         const notificationItem = `<p class="notification-item fade-in-from-below">${message}</p>`;
@@ -180,6 +192,7 @@ $(document).ready(function() {
         }
     }
 
+    // Chart.js data and configuration
     const data = {
         labels: ['January', 'February', 'March', 'April', 'May', 'June'],
         datasets: [{
@@ -195,6 +208,7 @@ $(document).ready(function() {
     const ctx = document.getElementById('contributionChart').getContext('2d');
     const ctxAdvanced = document.getElementById('contributionChartAdvanced').getContext('2d');
     
+    // Initialize charts
     let contributionChart = new Chart(ctx, {
         type: 'line',
         data: data,
@@ -219,22 +233,27 @@ $(document).ready(function() {
         }
     });
 
+    // Function to update charts data
     function updateCharts() {
         data.datasets[0].data = data.datasets[0].data.map(() => Math.floor(Math.random() * 20));
         contributionChart.update();
         contributionChartAdvanced.update();
     }
 
+    // Update charts every second
     setInterval(updateCharts, 1000);
 
+    // Toggle between layouts
     $('#toggle-layout').on('click', function() {
         $('#mainLayout').toggle();
         $('#advancedLayout').toggle();
     });
 
+    // Toggle dark mode
     $('#toggle-dark-mode').on('click', function() {
         $('body').toggleClass('dark-mode');
     });
 
+    // Load circles from localStorage on page load
     loadCirclesFromLocalStorage();
-});
+})
