@@ -280,7 +280,7 @@ $('#circleList').on('click', '.edit-circle', function(event) {
     }
 
     // Update charts every second
-    setInterval(updateCharts, 1000);
+    setInterval(updateCharts, 3000);
 
     // Toggle between layouts
     $('#toggle-layout').on('click', function() {

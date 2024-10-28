@@ -91,11 +91,20 @@ body {
 
 .no-circles-message {
     font-size: 28px; /* Increase font size */
-    letter-spacing: 5px;
+    letter-spacing: 2px;
     gap: 5px;
     padding: 20px 0; /* Optional: add padding for spacing */
 }
 
+@media (max-width: 768px) {
+    /* Custom styles for mobile devices */
+    .card {
+        margin-bottom: 20px; /* Add some space between cards */
+    }
+    h2 {
+        font-size: 1.5rem; /* Adjust header size */
+    }
+}
 
 .card:hover {
     transform: translateY(-5px);

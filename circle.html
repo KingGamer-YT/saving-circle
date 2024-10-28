@@ -11,28 +11,28 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    
 </head>
 <body>
     <header class="bg-success text-white text-center p-4">
         <h1 class="display-4 font-weight-bold fade-in" style="animation-delay: 0s;">Savings Circle Dashboard <i class="fas fa-piggy-bank"></i></h1>
         <p class="lead fade-in" style="animation-delay: 0.2s;">Manage your savings effortlessly!</p>
-        <button id="logoutButton" class="btn btn-light mt-3 fade-in log-out" style="animation-delay: 0.4s; float: left;">Logout</button>
-        <button id="toggle-dark-mode" class="btn btn-light mt-3 fade-in" style="animation-delay: 0.4s;">Toggle Dark Mode</button>
-        <button id="toggle-layout" class="btn btn-light mt-3 fade-in ml-4" style="animation-delay: 0.4s;">Switch to Advanced Layout</button>
+        <div class="d-flex justify-content-center flex-wrap">
+            <button id="logoutButton" class="btn btn-light mt-3 fade-in log-out" style="animation-delay: 0.4s;">Logout</button>
+            <button id="toggle-dark-mode" class="btn btn-light mt-3 fade-in mx-2" style="animation-delay: 0.4s;">Toggle Dark Mode</button>
+            <button id="toggle-layout" class="btn btn-light mt-3 fade-in" style="animation-delay: 0.4s;">Switch to Advanced Layout</button>
+        </div>
     </header>
 
     <main class="container mt-4">
         <div id="mainLayout">
             <div class="row">
-                <div class="col-md-12 mb-4 fade-in" style="animation-delay: 0.6s;">
+                <div class="col-12 mb-4 fade-in" style="animation-delay: 0.6s;">
                     <div class="card shadow-lg">
                         <div class="card-header">
                             <h2>My Circles <i class="fas fa-users"></i></h2>
                             <button class="btn btn-success float-right" data-toggle="modal" data-target="#createCircleModal">Create New Circle</button>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body table-responsive">
                             <table class="table table-bordered">
                                 <thead class="thead-light">
                                     <tr>
@@ -51,7 +51,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-12 mb-4 fade-in" style="animation-delay: 1.4s;">
+                <div class="col-12 mb-4 fade-in" style="animation-delay: 1.4s;">
                     <div class="card shadow-lg">
                         <div class="card-header">
                             <h2>Contribution Overview <i class="fas fa-chart-line"></i></h2>
@@ -66,7 +66,7 @@
 
         <div id="advancedLayout" style="display: none;">
             <div class="row">
-                <div class="col-md-12 mb-4 fade-in" style="animation-delay: 0.6s;">
+                <div class="col-12 mb-4 fade-in" style="animation-delay: 0.6s;">
                     <div class="card shadow-lg">
                         <div class="card-header">
                             <h2>Log Contributions <i class="fas fa-share-alt"></i></h2>
@@ -91,7 +91,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-12 mb-4 fade-in" style="animation-delay: 1.0s;">
+                <div class="col-12 mb-4 fade-in" style="animation-delay: 1.0s;">
                     <div class="card shadow-lg">
                         <div class="card-header">
                             <h2>Contribution Overview <i class="fas fa-chart-line"></i></h2>
@@ -147,44 +147,46 @@
             </div>
         </div>
     </div>
-<!-- Edit Circle Modal -->
-<div class="modal fade" id="editCircleModal" tabindex="-1" role="dialog" aria-labelledby="editCircleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editCircleModalLabel">Edit Circle</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="edit-circle-form">
-                    <input type="hidden" id="edit-circle-id">
-                    <div class="form-group">
-                        <label for="edit-circle-name">Circle Name</label>
-                        <input type="text" class="form-control" id="edit-circle-name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-contribution-amount">Contribution Goal</label>
-                        <input type="number" class="form-control" id="edit-contribution-amount" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-number-of-people">Number of People</label>
-                        <input type="number" class="form-control" id="edit-number-of-people" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-payment-frequency">Payment Frequency</label>
-                        <select class="form-control" id="edit-payment-frequency">
-                            <option value="weekly">Weekly</option>
-                            <option value="monthly">Monthly</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-success">Save Changes</button>
-                </form>
+
+    <!-- Edit Circle Modal -->
+    <div class="modal fade" id="editCircleModal" tabindex="-1" role="dialog" aria-labelledby="editCircleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editCircleModalLabel">Edit Circle</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-circle-form">
+                        <input type="hidden" id="edit-circle-id">
+                        <div class="form-group">
+                            <label for="edit-circle-name">Circle Name</label>
+                            <input type="text" class="form-control" id="edit-circle-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-contribution-amount">Contribution Goal</label>
+                            <input type="number" class="form-control" id="edit-contribution-amount" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-number-of-people">Number of People</label>
+                            <input type="number" class="form-control" id="edit-number-of-people" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-payment-frequency">Payment Frequency</label>
+                            <select id="edit-payment-frequency" class="form-control">
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success">Save Changes</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     <script src="script.js"></script>
 </body>
