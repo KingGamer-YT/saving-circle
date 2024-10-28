@@ -39,15 +39,8 @@ $(document).ready(function() {
     function renderCircles() {
         const circleList = $('#circleList');
         circleList.empty(); // Clear existing list
-    
         if (circles.length === 0) {
-            const row = $('<tr>').append(
-                $('<td>')
-                    .attr('colspan', 5) // Adjust colspan to match the number of columns
-                    .addClass('text-center no-circles-message') // Add class for styling
-                    .text('No circles Created yet.')
-            );
-            circleList.append(row);
+            circleList.append('<p>No circles yet.</p>');
         } else {
             circles.forEach(circle => {
                 const row = document.createElement("tr");
@@ -71,7 +64,8 @@ $(document).ready(function() {
                 `;
                 circleList.append(row);
             });
-        }    
+        }
+
         // Add delete functionality
         circleList.find('.delete-circle').off('click').on('click', function(event) {
             event.preventDefault(); // Prevent default anchor behavior
@@ -82,46 +76,18 @@ $(document).ready(function() {
             renderCircles(); // Re-render the list after deletion
         });
 
-     // Add edit functionality
-$('#circleList').on('click', '.edit-circle', function(event) {
-    event.preventDefault();
-    const circleId = $(this).data('id');
-    const circleToEdit = circles.find(circle => circle.id === circleId);
-    if (circleToEdit) {
-        // Pre-fill the edit form with circle data
-        $('#edit-circle-name').val(circleToEdit.name);
-        $('#edit-contribution-amount').val(circleToEdit.goal);
-        $('#edit-number-of-people').val(circleToEdit.numberOfPeople);
-        $('#edit-payment-frequency').val(circleToEdit.frequency);
-        $('#edit-circle-id').val(circleId); // Store the circle ID for submission
-        $('#editCircleModal').modal('show'); // Show the edit modal
-    }
-});
-
-        // Handle form submission for editing a circle
-        $('#edit-circle-form').on('submit', function(event) {
-            event.preventDefault();
-            const circleId = parseInt($('#edit-circle-id').val(), 10);
-            const updatedName = $('#edit-circle-name').val();
-            const updatedGoal = parseFloat($('#edit-contribution-amount').val());
-            const updatedPeople = parseInt($('#edit-number-of-people').val(), 10);
-            const updatedFrequency = $('#edit-payment-frequency').val();
-
-            // Find the circle and update its data
-            const circleToUpdate = circles.find(circle => circle.id === circleId);
-            if (circleToUpdate) {
-                circleToUpdate.name = updatedName;
-                circleToUpdate.goal = updatedGoal;
-                circleToUpdate.numberOfPeople = updatedPeople;
-                circleToUpdate.frequency = updatedFrequency;
-
-                // Save updated circles to localStorage and re-render the circles
-                saveCirclesToLocalStorage();
-                renderCircles();
-                showNotification(`Updated circle: ${updatedName}.`);
-
-                // Hide the modal after saving
-                $('#editCircleModal').modal('hide');
+        // Add edit functionality
+        circleList.find('.edit-circle').off('click').on('click', function(event) {
+            event.preventDefault(); // Prevent default anchor behavior
+            const circleId = $(this).data('id');
+            const circleToEdit = circles.find(circle => circle.id === circleId);
+            if (circleToEdit) {
+                $('#edit-circle-name').val(circleToEdit.name);
+                $('#edit-contribution-amount').val(circleToEdit.goal);
+                $('#edit-number-of-people').val(circleToEdit.numberOfPeople);
+                $('#edit-payment-frequency').val(circleToEdit.frequency);
+                $('#edit-circle-id').val(circleId); // Store the circle ID for submission
+                $('#editCircleModal').modal('show'); // Show the edit modal
             }
         });
 

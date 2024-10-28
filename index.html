@@ -89,7 +89,7 @@ function showLoginModal() {
 function checkLoginStatus() {
     const loggedInUser = localStorage.getItem('loggedInUser'); // Check if user is logged in
     if (loggedInUser) {
-        // If logged in, redirect to dashboard
+        // If logged in, redirect to circle
         window.location.href = "circle.html";
     }
 }
@@ -130,7 +130,7 @@ function handleRegister(event) {
         closeModal('registerModal');
         hidePreloader();
         localStorage.setItem('loggedInUser', username); // Store logged-in username
-        window.location.href = "circle.html"; // Redirect to the dashboard
+        window.location.href = "circle.html"; // Redirect to the circle
     }, 3000);
 }
 
@@ -148,7 +148,7 @@ function handleLogin(event) {
             alert('Login successful!'); // Alert for successful login
             closeModal('loginModal');
             hidePreloader();
-            window.location.href = "dashboard.html"; // Redirect to the dashboard
+            window.location.href = "circle.html"; // Redirect to the circle
         }, 3000);
     } else {
         alert('Invalid username or password.'); // Alert for invalid login
