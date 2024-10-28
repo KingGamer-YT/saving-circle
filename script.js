@@ -1,28 +1,8 @@
 $(document).ready(function() {
     // Initialize an empty array to hold circle data
     let circles = [];
-    // Get the logged-in user's ID from localStorage
     const userId = localStorage.getItem('loggedInUser');
 
-    // Function to load circles from localStorage
-    function loadCirclesFromLocalStorage() {
-        const storedCircles = localStorage.getItem(`circles_${userId}`);
-        if (storedCircles) {
-            circles = JSON.parse(storedCircles);
-            populateCircleDropdown();
-            circles.forEach(circle => {
-                addCircle(circle.name, circle.totalContributed, circle.numberOfPeople, circle.frequency);
-            });
-        }
-    }
-
-    // Event listener for logout button
-    document.getElementById('logoutButton').addEventListener('click', function() {
-        localStorage.removeItem('loggedInUser'); // Remove user session
-        window.location.href = 'index.html'; // Redirect to login page
-    });
-
-    // Function to check login status
     function checkLoginStatus() {
         const loggedInUser = localStorage.getItem('loggedInUser');
         if (!loggedInUser) {
@@ -30,15 +10,111 @@ $(document).ready(function() {
         }
     }
 
-    // Check login status on page load
     window.onload = checkLoginStatus;
 
-    // Function to save circles to localStorage
+    function loadCirclesFromLocalStorage() {
+        const storedCircles = localStorage.getItem(`circles_${userId}`);
+        if (storedCircles) {
+            circles = JSON.parse(storedCircles);
+            populateCircleDropdown();
+            renderCircles(); // Ensure circles are rendered on load
+        }
+    }
+
     function saveCirclesToLocalStorage() {
         localStorage.setItem(`circles_${userId}`, JSON.stringify(circles));
     }
 
-    // Add fade-in animations to elements
+    function populateCircleDropdown() {
+        const selectCircle = $('#select-circle');
+        selectCircle.empty();
+        const defaultOption = $('<option>').val('').text('Select a circle');
+        selectCircle.append(defaultOption);
+        circles.forEach(circle => {
+            const option = $('<option>').val(circle.id).data('amount', circle.goal).text(circle.name);
+            selectCircle.append(option);
+        });
+    }
+
+    function renderCircles() {
+        const circleList = $('#circleList');
+        circleList.empty(); // Clear existing list
+        if (circles.length === 0) {
+            circleList.append('<p>No circles yet.</p>');
+        } else {
+            circles.forEach(circle => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${circle.name}</td>
+                    <td>$${circle.totalContributed}</td>
+                    <td>${circle.numberOfPeople}</td>
+                    <td>${circle.frequency}</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Actions
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item edit-circle" href="#" data-id="${circle.id}">Edit</a>
+                                <a class="dropdown-item manage-circle" href="#" data-id="${circle.id}">Manage</a>
+                                <a class="dropdown-item delete-circle" href="#" data-id="${circle.id}">Delete</a>
+                            </div>
+                        </div>
+                    </td>
+                `;
+                circleList.append(row);
+            });
+        }
+
+        // Add delete functionality
+        circleList.find('.delete-circle').off('click').on('click', function(event) {
+            event.preventDefault(); // Prevent default anchor behavior
+            const circleId = $(this).data('id');
+            circles = circles.filter(circle => circle.id !== circleId);
+            saveCirclesToLocalStorage();
+            showNotification(`Deleted circle with ID: ${circleId}.`);
+            renderCircles(); // Re-render the list after deletion
+        });
+
+        // Add edit functionality
+        circleList.find('.edit-circle').off('click').on('click', function(event) {
+            event.preventDefault(); // Prevent default anchor behavior
+            const circleId = $(this).data('id');
+            const circleToEdit = circles.find(circle => circle.id === circleId);
+            if (circleToEdit) {
+                $('#edit-circle-name').val(circleToEdit.name);
+                $('#edit-contribution-amount').val(circleToEdit.goal);
+                $('#edit-number-of-people').val(circleToEdit.numberOfPeople);
+                $('#edit-payment-frequency').val(circleToEdit.frequency);
+                $('#edit-circle-id').val(circleId); // Store the circle ID for submission
+                $('#editCircleModal').modal('show'); // Show the edit modal
+            }
+        });
+
+        // Add manage functionality (if needed, you can implement this)
+        circleList.find('.manage-circle').off('click').on('click', function(event) {
+            event.preventDefault(); // Prevent default anchor behavior
+            const circleId = $(this).data('id');
+            // Implement your manage functionality here
+            showNotification(`Manage circle with ID: ${circleId}.`);
+        });
+    }
+
+    function showNotification(message) {
+        const notificationList = $('#notificationList');
+        const notificationItem = `<p class="notification-item fade-in-from-below">${message}</p>`;
+        notificationList.empty();
+        notificationList.append(notificationItem);
+        setTimeout(() => {
+            notificationList.children().last().addClass('show-from-below');
+        }, 50);
+    }
+
+    document.getElementById('logoutButton').addEventListener('click', function() {
+        localStorage.removeItem('loggedInUser');
+        window.location.href = 'index.html';
+    });
+
     $('#header').addClass('fade-in-from-above');
     setTimeout(function() {
         $('#header').addClass('show-from-above');
@@ -54,24 +130,8 @@ $(document).ready(function() {
         $('#footer').addClass('show-from-right');
     }, 150);
 
-    // Function to populate the circle dropdown menu
-    function populateCircleDropdown() {
-        const selectCircle = $('#select-circle');
-        selectCircle.empty();
-
-        const defaultOption = $('<option>').val('').text('Select a circle');
-        selectCircle.append(defaultOption);
-
-        circles.forEach(circle => {
-            const option = $('<option>').val(circle.id).data('amount', circle.goal).text(circle.name);
-            selectCircle.append(option);
-        });
-    }
-
-    // Event listener for circle creation form submission
     $('#create-circle-form').on('submit', function(event) {
         event.preventDefault();
-
         const circleName = $('#circle-name').val();
         const contributionAmount = parseFloat($('#contribution-amount').val());
         const numberOfPeople = parseInt($('#number-of-people').val(), 10);
@@ -94,17 +154,18 @@ $(document).ready(function() {
 
         circles.push(newCircle);
         saveCirclesToLocalStorage();
-        addCircle(circleName, newCircle.totalContributed, numberOfPeople, frequency);
         showNotification(`Created circle: ${circleName} with a contribution goal of $${contributionAmount} and ${numberOfPeople} people with frequency ${frequency}`);
-        
+
         $(this).trigger("reset");
         populateCircleDropdown();
+        renderCircles(); // Re-render circles to display the new one
+
+        // Close the modal after creating the circle
+        $('#createCircleModal').modal('hide'); // Adjust the modal ID as necessary
     });
 
-    // Event listener for logging contributions
     $('#log-contribution-form').on('submit', function(event) {
         event.preventDefault();
-
         const selectedCircleId = $('#select-circle').val();
         const logAmount = parseFloat($('#log-amount').val());
         
@@ -122,74 +183,18 @@ $(document).ready(function() {
         selectedCircle.totalContributed += logAmount;
         $('#log-message').text(`You have logged a contribution of $${logAmount} to ${selectedCircle.name}.`).show();
 
-        updateCircleContribution(selectedCircle.id, selectedCircle.totalContributed, selectedCircle.numberOfPeople);
+        updateCircleContribution(selectedCircle.id, selectedCircle.totalContributed);
         saveCirclesToLocalStorage();
 
         showNotification(`Logged contribution of $${logAmount} to ${selectedCircle.name}.`);
 
         $(this).trigger("reset");
     });
-    
-    // Function to add a circle to the display list
-    function addCircle(name, total, numberOfPeople, frequency) {
+
+    function updateCircleContribution(circleId, total) {
         const circleList = $('#circleList');
-        const circleItem = `
-            <div class="notification-item fade-in-from-below">
-                <h3>${name} <i class="fa fa-trash delete-circle" aria-hidden="true" style="font-size: 12px; float: right; cursor: pointer;"></i></h3>
-                <p>Total Contributions: $${total}</p>
-                <p>Number of People: ${numberOfPeople}</p>
-                <p>Payment Frequency: ${frequency}</p>
-            </div>`;
-
-        // Clear the list if it's the first item
-        if (circleList.find('.notification-item').length === 0) {
-            circleList.empty();
-        }
-
-        circleList.append(circleItem);
-        setTimeout(() => {
-            circleList.children().last().addClass('show-from-below');
-        }, 50);
-
-        // Check if no circles exist
-        if (circleList.children().length === 0) {
-            circleList.append('<p>No circles yet.</p>');
-        }
-
-        // Add delete functionality
-        circleList.find('.delete-circle').off('click').on('click', function() {
-            const circleName = $(this).closest('.notification-item').find('h3').text().trim();
-            $(this).closest('.notification-item').remove();
-            // Remove the circle from the circles array
-            circles = circles.filter(circle => circle.name !== circleName);
-            saveCirclesToLocalStorage();
-            showNotification(`Deleted circle: ${circleName}.`);
-        });
-    }
-
-    // Function to update circle contribution details
-    function updateCircleContribution(circleId, total, numberOfPeople) {
-        const circleItem = $('.notification-item').eq(circleId - 1);
-        circleItem.find('p').eq(0).text(`Total Contributions: $${total}`);
-        circleItem.find('p').eq(1).text(`Number of People: ${numberOfPeople}`);
-    }
-
-    // Function to show notifications
-    function showNotification(message) {
-        const notificationList = $('#notificationList');
-        const notificationItem = `<p class="notification-item fade-in-from-below">${message}</p>`;
-
-        // Clear the previous notifications before adding new
-        notificationList.empty();
-        
-        notificationList.append(notificationItem);
-        setTimeout(() => {
-            notificationList.children().last().addClass('show-from-below');
-        }, 50);
-
-        if (notificationList.children().length === 0) {
-            notificationList.append('<p>No notifications yet.</p>');
-        }
+        const circleRow = circleList.find(`button[data-id="${circleId}"]`).closest('tr');
+        circleRow.find('td:nth-child(2)').text(`$${total}`);
     }
 
     // Chart.js data and configuration
@@ -240,20 +245,6 @@ $(document).ready(function() {
         contributionChartAdvanced.update();
     }
 
-    // Update charts every second
-    setInterval(updateCharts, 1000);
-
-    // Toggle between layouts
-    $('#toggle-layout').on('click', function() {
-        $('#mainLayout').toggle();
-        $('#advancedLayout').toggle();
-    });
-
-    // Toggle dark mode
-    $('#toggle-dark-mode').on('click', function() {
-        $('body').toggleClass('dark-mode');
-    });
-
-    // Load circles from localStorage on page load
+    // Load circles on page load
     loadCirclesFromLocalStorage();
-})
+});

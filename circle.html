@@ -17,86 +17,34 @@
         <h1 class="display-4 font-weight-bold fade-in" style="animation-delay: 0s;">Savings Circle Dashboard <i class="fas fa-piggy-bank"></i></h1>
         <p class="lead fade-in" style="animation-delay: 0.2s;">Manage your savings effortlessly!</p>
         <button id="logoutButton" class="btn btn-light mt-3 fade-in log-out" style="animation-delay: 0.4s; float: left;">Logout</button>
-        <button id="toggle-dark-mode" class="btn btn-light mt-3 fade-in " style="animation-delay: 0.4s;">Toggle Dark Mode</button>
+        <button id="toggle-dark-mode" class="btn btn-light mt-3 fade-in" style="animation-delay: 0.4s;">Toggle Dark Mode</button>
         <button id="toggle-layout" class="btn btn-light mt-3 fade-in ml-4" style="animation-delay: 0.4s;">Switch to Advanced Layout</button>
     </header>
 
     <main class="container mt-4">
         <div id="mainLayout">
             <div class="row">
-                <div class="col-md-6 mb-4 fade-in" style="animation-delay: 0.6s;">
+                <div class="col-md-12 mb-4 fade-in" style="animation-delay: 0.6s;">
                     <div class="card shadow-lg">
                         <div class="card-header">
                             <h2>My Circles <i class="fas fa-users"></i></h2>
-                        </div>
-                        <div class="card-body" id="circleList">
-                            <p>No circles created yet!</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-4 fade-in" style="animation-delay: 0.8s;">
-                    <div class="card shadow-lg">
-                        <div class="card-header">
-                            <h2>Create a New Circle <i class="fas fa-plus-circle"></i></h2>
+                            <button class="btn btn-success float-right" data-toggle="modal" data-target="#createCircleModal">Create New Circle</button>
                         </div>
                         <div class="card-body">
-                            <form id="create-circle-form">
-                                <div class="form-group">
-                                    <label for="circle-name">Circle Name:</label>
-                                    <input type="text" class="form-control" id="circle-name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="contribution-amount">Contribution Amount:</label>
-                                    <input type="number" class="form-control" id="contribution-amount" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="numberOfPeople">Number of People:</label>
-                                    <input type="number" id="number-of-people" name="numberOfPeople" min="1" required class="form-control" placeholder="number-of-people"> 
-                                </div>
-                                <div class="form-group">
-                                    <label for="payment-frequency">Payment Frequency:</label>
-                                        <select id="payment-frequency" class="form-control">
-                                            <option value="daily">Daily</option>
-                                            <option value="weekly">Weekly</option>
-                                            <option value="monthly">Monthly</option>
-                                        </select>
-                                </div>
-                                <button type="submit" class="btn btn-success">Create Circle</button>
-                            </form>
-                            
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-4 fade-in" style="animation-delay: 1.0s;">
-                    <div class="card shadow-lg">
-                        <div class="card-header">
-                            <h2>User Profile <i class="fas fa-user"></i></h2>
-                        </div>
-                        <div class="card-body">
-                            <form id="profile-form">
-                                <div class="form-group">
-                                    <label for="username">Username:</label>
-                                    <input type="text" class="form-control" id="username" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="email">Email:</label>
-                                    <input type="email" class="form-control" id="email" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Update Profile</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-4 fade-in" style="animation-delay: 1.2s;">
-                    <div class="card shadow-lg">
-                        <div class="card-header">
-                            <h2>Notifications <i class="fas fa-bell"></i></h2>
-                        </div>
-                        <div class="card-body" id="notificationList">
-                            <p>No notifications.</p>
+                            <table class="table table-bordered">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Circle Name</th>
+                                        <th>Contribution Amount</th>
+                                        <th>Number of People</th>
+                                        <th>Payment Frequency</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="circleList">
+                                    <!-- Circles will be dynamically added here -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -127,6 +75,7 @@
                                     <label for="select-circle">Select Circle:</label>
                                     <select id="select-circle" class="form-control">
                                         <option value="">Select a circle</option>
+                                        <!-- Options will be added dynamically -->
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -157,6 +106,45 @@
     <footer class="text-center mt-4">
         <p>&copy; 2024 Savings Circle. All rights reserved.</p>
     </footer>
+
+    <!-- Create Circle Modal -->
+    <div class="modal fade" id="createCircleModal" tabindex="-1" role="dialog" aria-labelledby="createCircleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createCircleModalLabel">Create New Circle</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="create-circle-form">
+                        <div class="form-group">
+                            <label for="circle-name">Circle Name:</label>
+                            <input type="text" class="form-control" id="circle-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contribution-amount">Contribution Amount:</label>
+                            <input type="number" class="form-control" id="contribution-amount" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="number-of-people">Number of People:</label>
+                            <input type="number" id="number-of-people" min="1" required class="form-control"> 
+                        </div>
+                        <div class="form-group">
+                            <label for="payment-frequency">Payment Frequency:</label>
+                            <select id="payment-frequency" class="form-control">
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success">Create Circle</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>

@@ -90,7 +90,7 @@ function checkLoginStatus() {
     const loggedInUser = localStorage.getItem('loggedInUser'); // Check if user is logged in
     if (loggedInUser) {
         // If logged in, redirect to dashboard
-        window.location.href = "dashboard.html";
+        window.location.href = "circle.html";
     }
 }
 
@@ -130,7 +130,7 @@ function handleRegister(event) {
         closeModal('registerModal');
         hidePreloader();
         localStorage.setItem('loggedInUser', username); // Store logged-in username
-        window.location.href = "dashboard.html"; // Redirect to the dashboard
+        window.location.href = "circle.html"; // Redirect to the dashboard
     }, 3000);
 }
 
