@@ -31,7 +31,7 @@ $(document).ready(function() {
         const defaultOption = $('<option>').val('').text('Select a circle');
         selectCircle.append(defaultOption);
         circles.forEach(circle => {
-            const option = $('<option>').val(circle.id).data('amount', circle.goal).text(circle.name);
+            const option = $('<option>').val(circle.id).data('goal', circle.goal).text(circle.name);
             selectCircle.append(option);
         });
     }
@@ -45,7 +45,7 @@ $(document).ready(function() {
                 $('<td>')
                     .attr('colspan', 5) // Adjust colspan to match the number of columns
                     .addClass('text-center no-circles-message') // Add class for styling
-                    .text('No circles Created yet.')
+                    .text('No circles created yet.')
             );
             circleList.append(row);
         } else {
@@ -53,7 +53,7 @@ $(document).ready(function() {
                 const row = document.createElement("tr");
                 row.innerHTML = `
                     <td>${circle.name}</td>
-                    <td>$${circle.totalContributed}</td>
+                    <td>$${circle.goal}</td> <!-- Changed to show goal instead of total contributed -->
                     <td>${circle.numberOfPeople}</td>
                     <td>${circle.frequency}</td>
                     <td>
@@ -72,6 +72,7 @@ $(document).ready(function() {
                 circleList.append(row);
             });
         }    
+
         // Add delete functionality
         circleList.find('.delete-circle').off('click').on('click', function(event) {
             event.preventDefault(); // Prevent default anchor behavior
@@ -82,21 +83,21 @@ $(document).ready(function() {
             renderCircles(); // Re-render the list after deletion
         });
 
-     // Add edit functionality
-$('#circleList').on('click', '.edit-circle', function(event) {
-    event.preventDefault();
-    const circleId = $(this).data('id');
-    const circleToEdit = circles.find(circle => circle.id === circleId);
-    if (circleToEdit) {
-        // Pre-fill the edit form with circle data
-        $('#edit-circle-name').val(circleToEdit.name);
-        $('#edit-contribution-amount').val(circleToEdit.goal);
-        $('#edit-number-of-people').val(circleToEdit.numberOfPeople);
-        $('#edit-payment-frequency').val(circleToEdit.frequency);
-        $('#edit-circle-id').val(circleId); // Store the circle ID for submission
-        $('#editCircleModal').modal('show'); // Show the edit modal
-    }
-});
+        // Add edit functionality
+        $('#circleList').on('click', '.edit-circle', function(event) {
+            event.preventDefault();
+            const circleId = $(this).data('id');
+            const circleToEdit = circles.find(circle => circle.id === circleId);
+            if (circleToEdit) {
+                // Pre-fill the edit form with circle data
+                $('#edit-circle-name').val(circleToEdit.name);
+                $('#edit-contribution-amount').val(circleToEdit.goal);
+                $('#edit-number-of-people').val(circleToEdit.numberOfPeople); // This now starts at 0
+                $('#edit-payment-frequency').val(circleToEdit.frequency);
+                $('#edit-circle-id').val(circleId); // Store the circle ID for submission
+                $('#editCircleModal').modal('show'); // Show the edit modal
+            }
+        });
 
         // Handle form submission for editing a circle
         $('#edit-circle-form').on('submit', function(event) {
@@ -125,12 +126,12 @@ $('#circleList').on('click', '.edit-circle', function(event) {
             }
         });
 
-        // Add manage functionality (if needed, you can implement this)
+        // Update manage-circle click function
         circleList.find('.manage-circle').off('click').on('click', function(event) {
-            event.preventDefault(); // Prevent default anchor behavior
+            event.preventDefault();
             const circleId = $(this).data('id');
-            // Implement your manage functionality here
-            showNotification(`Manage circle with ID: ${circleId}.`);
+            // Navigate to the analytics page with circle ID in URL
+            window.location.href = `analytics.html?circleId=${circleId}`;
         });
     }
 
@@ -167,35 +168,32 @@ $('#circleList').on('click', '.edit-circle', function(event) {
     $('#create-circle-form').on('submit', function(event) {
         event.preventDefault();
         const circleName = $('#circle-name').val();
-        const contributionAmount = parseFloat($('#contribution-amount').val());
-        const numberOfPeople = parseInt($('#number-of-people').val(), 10);
+        const goalAmount = parseFloat($('#contribution-amount').val());
+
+        // Set number of people to start at 0
+        const numberOfPeople = 0; // Always start at 0
         const frequency = $('#payment-frequency').val();
 
-        if (isNaN(numberOfPeople) || numberOfPeople <= 0) {
-            alert("Please enter a valid number of people.");
-            return;
-        }
-
         const newCircle = {
-            id: circles.length + 1,
+            id: circles.length ? Math.max(...circles.map(circle => circle.id)) + 1 : 1, // Generate ID based on existing circles
             name: circleName,
-            goal: contributionAmount,
+            goal: goalAmount,
             contributions: [],
-            totalContributed: contributionAmount,
-            numberOfPeople: numberOfPeople,
+            totalContributed: 0,
+            numberOfPeople: numberOfPeople, // This is now set to 0
             frequency: frequency
         };
 
         circles.push(newCircle);
         saveCirclesToLocalStorage();
-        showNotification(`Created circle: ${circleName} with a contribution goal of $${contributionAmount} and ${numberOfPeople} people with frequency ${frequency}`);
+        showNotification(`Created circle: ${circleName} with a goal of $${goalAmount} and ${numberOfPeople} people with frequency ${frequency}`);
 
         $(this).trigger("reset");
         populateCircleDropdown();
         renderCircles(); // Re-render circles to display the new one
 
         // Close the modal after creating the circle
-        $('#createCircleModal').modal('hide'); // Adjust the modal ID as necessary
+        $('#createCircleModal').modal('hide');
     });
 
     $('#log-contribution-form').on('submit', function(event) {
@@ -209,8 +207,8 @@ $('#circleList').on('click', '.edit-circle', function(event) {
             return;
         }
 
-        if (logAmount !== selectedCircle.goal) {
-            alert(`Error: The contribution amount must be exactly $${selectedCircle.goal}.`);
+        if (logAmount <= 0) {
+            alert('Error: The contribution amount must be a positive number.');
             return;
         }
 
@@ -225,74 +223,13 @@ $('#circleList').on('click', '.edit-circle', function(event) {
         $(this).trigger("reset");
     });
 
-    function updateCircleContribution(circleId, total) {
-        const circleList = $('#circleList');
-        const circleRow = circleList.find(`button[data-id="${circleId}"]`).closest('tr');
-        circleRow.find('td:nth-child(2)').text(`$${total}`);
+    function updateCircleContribution(circleId, totalContributed) {
+        const circleRow = $('#circleList').find(`tr:contains(${circleId})`);
+        if (circleRow.length) {
+            const contributedCell = circleRow.find('td').eq(1); // Assuming goal is in the second cell
+            contributedCell.text(`$${totalContributed}`); // Update total contributed display
+        }
     }
 
-    // Chart.js data and configuration
-    const data = {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-        datasets: [{
-            label: 'Monthly Contributions',
-            data: [12, 19, 3, 5, 2, 3],
-            borderColor: 'rgba(40, 167, 69, 1)',
-            borderWidth: 2,
-            fill: false,
-            backgroundColor: 'rgba(40, 167, 69, 0.2)',
-        }]
-    };
-
-    const ctx = document.getElementById('contributionChart').getContext('2d');
-    const ctxAdvanced = document.getElementById('contributionChartAdvanced').getContext('2d');
-    
-    // Initialize charts
-    let contributionChart = new Chart(ctx, {
-        type: 'line',
-        data: data,
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-
-    let contributionChartAdvanced = new Chart(ctxAdvanced, {
-        type: 'bar',
-        data: data,
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-
-    // Function to update charts data
-    function updateCharts() {
-        data.datasets[0].data = data.datasets[0].data.map(() => Math.floor(Math.random() * 20));
-        contributionChart.update();
-        contributionChartAdvanced.update();
-    }
-
-    // Update charts every second
-    setInterval(updateCharts, 3000);
-
-    // Toggle between layouts
-    $('#toggle-layout').on('click', function() {
-        $('#mainLayout').toggle();
-        $('#advancedLayout').toggle();
-    });
-
-    // Toggle dark mode
-    $('#toggle-dark-mode').on('click', function() {
-        $('body').toggleClass('dark-mode');
-    });
-
-    // Load circles from localStorage on page load
     loadCirclesFromLocalStorage();
 });

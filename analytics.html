@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circle Analytics</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #222528; /* Lightened dark background */
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #4dc9ff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            color: #ffffff;
+            margin-top: 40px;
+            border-bottom: 2px solid #4dc9ff;
+            padding-bottom: 10px;
+        }
+
+        .card {
+            background-color: #2a2d30; /* Lightened card background */
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .table {
+            margin-top: 20px;
+            background-color: #3a3d40; /* Lightened table background */
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th {
+            background-color: #4dc9ff;
+            color: #1c1e24;
+        }
+
+        .chart-container {
+            position: relative;
+            margin: 20px auto;
+            height: 50vh; /* Adjust height for pie chart */
+            width: 100%;
+            max-width: 800px;
+        }
+
+        footer {
+            margin-top: 30px;
+            padding: 20px 0;
+            background-color: #2a2d30; /* Lightened footer background */
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .navbar {
+            background-color: #3a3d40; /* Lightened navbar background */
+        }
+
+        .navbar-brand,
+        .nav-link {
+            color: #ffffff;
+        }
+
+        .nav-link:hover {
+            color: #4dc9ff;
+        }
+
+        .stat-card {
+            margin: 10px;
+            padding: 20px;
+            color: #ffffff;
+            border-radius: 15px;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .badge {
+            font-size: 1.2rem;
+            color: #ffffff;
+        }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                width: 100%;
+            }
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <a class="navbar-brand" href="circle.html" style="color: #ffffff;">Savings Circle</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="circle.html" style="color: #ffffff;">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="logoutButton" style="color: #ffffff;">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container mt-5">
+        <h1>Circle Analytics</h1>
+
+        <div clanss="row">
+            <div class="col-md-4">
+                <div class="card stat-card">
+                    <h3>Total Contributions</h3>
+                    <h2 class="badge badge-info" id="totalContributions">$0</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stat-card">
+                    <h3>Number of Contributors</h3>
+                    <h2 class="badge badge-warning" id="numContributors">0</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stat-card">
+                    <h3>Goal Amount</h3>
+                    <h2 class="badge badge-success" id="goalAmount">$0</h2>
+                </div>
+            </div>
+        </div>
+
+        <div id="circleInfo" class="mb-4"></div>
+
+        <h2>Log Contribution</h2>
+        <div class="input-group">
+            <input type="text" id="contributorName" class="form-control" placeholder="Contributor's Name">
+            <input type="number" id="contributionAmount" class="form-control" placeholder="Contribution Amount" min="1" step="any">
+            <div class="input-group-append">
+                <button class="btn btn-primary" id="logContributionButton">Log Contribution</button>
+            </div>
+        </div>
+
+        <h2>Contribution Breakdown</h2>
+        <table class="table table-bordered" id="contributionList">
+            <thead>
+                <tr>
+                    <th>Member</th>
+                    <th>Contribution Amount</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <h2>Contribution Chart</h2>
+        <div class="chart-container">
+            <canvas id="contributionChart"></canvas>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Savings Circle. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        $(document).ready(function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const circleId = urlParams.get('circleId');
+            let circles = [];
+            const userId = localStorage.getItem('loggedInUser');
+
+            function checkLoginStatus() {
+                const loggedInUser = localStorage.getItem('loggedInUser');
+                if (!loggedInUser) {
+                    window.location.href = "index.html"; // Redirect to login page if not logged in
+                }
+            }
+
+            window.onload = checkLoginStatus;
+
+            function loadCirclesFromLocalStorage() {
+                const storedCircles = localStorage.getItem(`circles_${userId}`);
+                if (storedCircles) {
+                    circles = JSON.parse(storedCircles);
+                    displayAnalytics();
+                }
+            }
+
+            function displayAnalytics() {
+                const selectedCircle = circles.find(circle => circle.id == circleId);
+                if (selectedCircle) {
+                    $('#circleInfo').html(`
+                        <h3>${selectedCircle.name}</h3>
+                        <p>Goal: $${selectedCircle.goal}</p>
+                    `);
+                    $('#goalAmount').text(`$${selectedCircle.goal}`);
+                    $('#totalContributions').text(`$${selectedCircle.totalContributed || 0}`); // Set initial total contributions to 0
+                    $('#numContributors').text(`${selectedCircle.numberOfPeople || 0}`);
+
+                    // Populate contributions
+                    const contributionList = $('#contributionList tbody');
+                    contributionList.empty(); // Clear existing contributions
+
+                    const contributionData = [];
+                    const memberNames = [];
+
+                    if (selectedCircle.contributions.length > 0) {
+                        selectedCircle.contributions.forEach(contribution => {
+                            const row = `<tr>
+                                <td style="color: #ffffff;">${contribution.member}</td>
+                                <td style="color: #ffffff;">$${contribution.amount}</td>
+                            </tr>`;
+                            contributionList.append(row);
+                            contributionData.push(contribution.amount);
+                            memberNames.push(contribution.member);
+                        });
+
+                        // Create chart
+                        createChart(memberNames, contributionData);
+                    } else {
+                        contributionList.append('<tr><td colspan="2" class="text-center" style="color: #ffffff;">No contributions logged yet.</td></tr>');
+                    }
+                } else {
+                    alert("Circle not found.");
+                    window.location.href = "dashboard.html"; // Redirect if circle not found
+                }
+            }
+
+            function createChart(labels, data) {
+                const ctx = document.getElementById('contributionChart').getContext('2d');
+                const contributionChart = new Chart(ctx, {
+                    type: 'pie', // Change to pie chart
+                    data: {
+                        labels: labels.length > 0 ? labels : ['No contributions'],
+                        datasets: [{
+                            label: 'Contributions',
+                            data: data.length > 0 ? data : [0],
+                            backgroundColor: [
+                                'rgba(77, 201, 255, 0.7)',
+                                'rgba(255, 159, 64, 0.7)',
+                                'rgba(75, 192, 192, 0.7)',
+                                'rgba(153, 102, 255, 0.7)',
+                                'rgba(255, 99, 132, 0.7)',
+                                'rgba(255, 206, 86, 0.7)',
+                            ],
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (tooltipItem) {
+                                        return tooltipItem.label + ': $' + tooltipItem.raw; // Show amount on tooltip
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            $('#logContributionButton').click(function () {
+                const contributorName = $('#contributorName').val();
+                const contributionAmount = parseFloat($('#contributionAmount').val());
+
+                if (!contributorName || isNaN(contributionAmount) || contributionAmount <= 0) {
+                    alert("Please enter valid contributor name and contribution amount.");
+                    return;
+                }
+
+                // Add contribution to the circle
+                const selectedCircle = circles.find(circle => circle.id == circleId);
+                selectedCircle.contributions.push({ member: contributorName, amount: contributionAmount });
+                selectedCircle.totalContributed = (selectedCircle.totalContributed || 0) + contributionAmount;
+                selectedCircle.numberOfPeople = selectedCircle.contributions.length; // Update contributor count
+
+                // Update local storage
+                localStorage.setItem(`circles_${userId}`, JSON.stringify(circles));
+
+                // Clear input fields
+                $('#contributorName').val('');
+                $('#contributionAmount').val('');
+
+                // Update analytics display
+                displayAnalytics();
+            });
+
+            loadCirclesFromLocalStorage();
+        });
+    </script>
+</body>
+
+</html>

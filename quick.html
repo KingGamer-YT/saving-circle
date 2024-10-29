@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Ban Screen</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            color: #B0B0B0;
+        }
+
+        /* Container Styling */
+        body {
+            background-color: #121A22;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #FFFFFF;
+        }
+        p{
+            color: #7B8488;
+        }
+        .container {
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            color: #EDEDED;
+        }
+
+        /* Icon Styling */
+        .icon {
+            width: 80px;
+            height: 80px;
+            background-color: #462A31; /* Darker red */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .icon svg {
+            width: 40px;
+            height: 40px;
+            fill: #FFFFFF;
+        }
+
+        /* Headings */
+        .title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #FFFFFF;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+            line-height: 1.5;
+            color: #B3B3B3;
+        }
+
+        /* Instruction Text */
+        .instruction {
+            font-weight: bold;
+            color: #D1D1D1;
+            margin-bottom: 5px;
+        }
+
+        .instruction a {
+            color: #2E8BFD; /* Light blue link color */
+            text-decoration: none;
+        }
+
+        .instruction a:hover {
+            text-decoration: underline;
+        }
+
+        /* Button Styling */
+        .download-btn {
+            display: block;
+            background-color: #25D366; /* WhatsApp green */
+            color: #FFFFFF;
+            font-weight: bold;
+            text-align: center;
+            padding: 15px;
+            border-radius: 25px;
+            text-decoration: none;
+            margin: 20px 0;
+        }
+
+        .learn-more {
+            color: #25D366;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .learn-more:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Shield Icon -->
+        <div class="icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 2L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-3zM15.59 16.59L12 13l-3.59 3.59L7 15.17 10.59 12 7 8.41 8.41 7l3.59 3.59L15.59 7 17 8.41 13.41 12 17 15.17z"/>
+            </svg>
+        </div>
+
+        <!-- Main Message -->
+        <h1 class="title">Your account is banned until November 2nd</h1>
+        <p class="subtitle">Due to a violation of our policies, your WhatsApp account has been temporarily banned. You can log back in on November 2nd.</p>
+
+        <!-- Instructions -->
+        <p class="instruction">How to prevent future bans</p>
+        <p>Use only the official WhatsApp app from verified sources. <a href="#">Go to official website</a></p>
+
+        <p class="instruction">More information</p>
+        <p>Learn more about our guidelines and avoid policy violations. <a href="#">Learn more</a></p>
+
+        <!-- Download Button -->
+        <a href="#" class="download-btn">Download WhatsApp</a>
+        <a href="#" class="learn-more">Learn More</a>
+    </div>
+</body>
+</html>
