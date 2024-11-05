@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savings Circle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="overlay"></div>
+    <div id="preloader">
+        <div class="loader"></div>
+        Loading...
+    </div>
+
+    <div class="hero-section">
+        <h1 id="welcomeText">Welcome to Savings Circle</h1>
+        <p class="description">Join us in building a community of savers!</p>
+        <button class="btn" onclick="showRegisterModal()">Register</button>
+        <button class="btn" onclick="showLoginModal()">Login</button>
+    </div>
+
+    <!-- Modal for Register -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('registerModal')">&times;</span>
+            <h2 style="color: black;">Register</h2>
+            <form id="registerForm" onsubmit="return handleRegister(event)">
+                <label for="regUsername">Username:</label>
+                <input type="text" id="regUsername" required>
+                <label for="regEmail">Email:</label>
+                <input type="email" id="regEmail" required>
+                <label for="regPassword">Password:</label>
+                <input type="password" id="regPassword" required>
+                <button type="submit" class="btn">Submit</button>
+                <p id="passwordSuggestion" style="color: gray;"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Login -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('loginModal')">&times;</span>
+            <h2 style="color: black;">Login</h2>
+            <form id="loginForm" onsubmit="return handleLogin(event)">
+                <label for="loginUsername">Username:</label>
+                <input type="text" id="loginUsername" required>
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" required>
+                <button type="submit" class="btn">Submit</button>
+                <p class="forgot-password" onclick="showForgotPassword()">forgot password?</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Forgot Password -->
+    <div id="forgotpassword" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('forgotpassword')">&times;</span>
+            <h2 style="color: black;">Create new Password</h2>
+            <form id="forgotPasswordForm" onsubmit="return handleForgotPassword(event)">
+                <label for="forgotUsername">Username:</label>
+                <input type="text" id="forgotUsername" required>
+                <label for="newPassword">New Password:</label>
+                <input type="password" id="newPassword" required>
+                <label for="confirmPassword">Confirm Password:</label>
+                <input type="password" id="confirmPassword" required>
+                <button type="submit" class="btn">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Circle Registration Modal -->
+    <div id="circleRegistrationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('circleRegistrationModal')">&times;</span>
+            <h2 style="color: black;">Register Circle</h2>
+            <form id="circleRegistrationForm" onsubmit="return handleCircleRegistration(event)">
+                <label for="circleName">Circle Name:</label>
+                <input type="text" id="circleName" required>
+                <button type="submit" class="btn">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showRegisterModal() {
+            document.getElementById('registerModal').style.display = "block";
+        }
+
+        function showForgotPassword() {
+            document.getElementById('forgotpassword').style.display = "block";
+        }
+
+        function showLoginModal() {
+            document.getElementById('loginModal').style.display = "block";
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+        }
+
+        // Function to check if user is logged in
+        function checkLoginStatus() {
+            const loggedInUser = localStorage.getItem('loggedInUser');
+            if (loggedInUser) {
+                const userData = JSON.parse(localStorage.getItem(loggedInUser));
+                if (userData && userData.circles && userData.circles.length > 0) {
+                    window.location.href = "analytics.html";
+                } else {
+                    showCircleRegistrationModal();
+                }
+            }
+        }
+
+        function showCircleRegistrationModal() {
+            document.getElementById('circleRegistrationModal').style.display = "block";
+        }
+
+        function handleRegister(event) {
+            event.preventDefault();
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+
+            if (!isValidPassword(password)) {
+                alert('Password must be at least 6 characters long and contain at least one number and one uppercase letter.');
+                return false;
+            }
+
+            if (localStorage.getItem(username)) {
+                alert('Username is already taken. Please choose a different username.');
+                return false;
+            }
+
+            const userData = {
+                username: username,
+                email: email,
+                password: password,
+                circles: []
+            };
+            localStorage.setItem(username, JSON.stringify(userData));
+
+            showPreloader();
+            setTimeout(() => {
+                alert('Registration successful!');
+                closeModal('registerModal');
+                hidePreloader();
+                localStorage.setItem('loggedInUser', username);
+                showCircleRegistrationModal();
+            }, 3000);
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const storedUserData = JSON.parse(localStorage.getItem(username));
+            if (storedUserData && storedUserData.password === password) {
+                localStorage.setItem('loggedInUser', username);
+                showPreloader();
+                setTimeout(() => {
+                    alert('Login successful!');
+                    closeModal('loginModal');
+                    hidePreloader();
+                    if (storedUserData.circles && storedUserData.circles.length > 0) {
+                        window.location.href = "analytics.html";
+                    } else {
+                        showCircleRegistrationModal();
+                    }
+                }, 3000);
+            } else {
+                alert('Invalid username or password.');
+            }
+        }
+
+        function handleForgotPassword(event) {
+            event.preventDefault();
+            const username = document.getElementById('forgotUsername').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (newPassword !== confirmPassword) {
+                alert('Passwords do not match!');
+                return false;
+            }
+
+            const storedUserData = JSON.parse(localStorage.getItem(username));
+            if (storedUserData) {
+                storedUserData.password = newPassword;
+                localStorage.setItem(username, JSON.stringify(storedUserData));
+                showPreloader();
+                setTimeout(() => {
+                    alert('Password reset successful!');
+                    closeModal('forgotpassword');
+                    hidePreloader();
+                }, 3000);
+            } else {
+                alert('User not found!');
+            }
+        }
+
+        function handleCircleRegistration(event) {
+            event.preventDefault();
+            const circleName = document.getElementById('circleName').value;
+            const loggedInUser = localStorage.getItem('loggedInUser');
+
+            if (loggedInUser) {
+                const userData = JSON.parse(localStorage.getItem(loggedInUser));
+                userData.circles.push({ name: circleName, contributions: [] });
+                localStorage.setItem(loggedInUser, JSON.stringify(userData));
+
+                showPreloader();
+                setTimeout(() => {
+                    alert('Circle registration successful!');
+                    closeModal('circleRegistrationModal');
+                    hidePreloader();
+                    window.location.href = "analytics.html";
+                }, 3000);
+            } else {
+                alert('You need to be logged in to register a circle.');
+            }
+        }
+
+        function isValidPassword(password) {
+            return password.length >= 6 && /\d/.test(password) && /[A-Z]/.test(password);
+        }
+
+        function showPreloader() {
+            document.getElementById('preloader').style.display = 'block';
+        }
+
+        function hidePreloader() {
+            document.getElementById('preloader').style.display = 'none';
+        }
+
+        window.onload = () => {
+            document.getElementById('preloader').style.display = 'none';
+            checkLoginStatus();
+        };
+        $(document).ready(function() {
+            $('#joinCircleForm').on('submit', function(event) {
+                event.preventDefault();
+                const circleId = $('#circleId').val();
+                const userId = localStorage.getItem('loggedInUser'); // Assuming you have a logged-in user ID stored
+
+                // Simulate joining the circle and saving to localStorage
+                let circles = JSON.parse(localStorage.getItem(`circles_${userId}`)) || [];
+                // Example circle structure
+                circles.push({ id: circleId, name: 'Circle Name', contributions: [] });
+                localStorage.setItem(`circles_${userId}`, JSON.stringify(circles));
+
+                // Show message and enable the analytics button
+                $('#message').text('Successfully joined the circle!').css('color', 'green');
+                $('#analyticsButton').show().attr('onclick', `location.href='analytics.html?circleId=${circleId}'`);
+            });
+        });
+    </script>
+</body>
+</html>

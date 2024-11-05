@@ -11,6 +11,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* Add your existing styles here */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #222528; /* Lightened dark background */
@@ -134,7 +135,7 @@
     <div class="container mt-5">
         <h1>Circle Analytics</h1>
 
-        <div clanss="row">
+        <div class="row">
             <div class="col-md-4">
                 <div class="card stat-card">
                     <h3>Total Contributions</h3>
@@ -156,6 +157,15 @@
         </div>
 
         <div id="circleInfo" class="mb-4"></div>
+
+        <h2>Invite People to Join Your Circle</h2>
+        <div class="input-group">
+            <input type="text" id="inviteLink" class="form-control" placeholder="Invite link will appear here" readonly>
+            <div class="input-group-append">
+                <button class="btn btn-primary" id="generateInviteButton">Generate Invite Link</button>
+                <span class="input-group-text" id="copyInviteLink" style="cursor: pointer;"><i class="fas fa-copy"></i></span>
+            </div>
+        </div>
 
         <h2>Log Contribution</h2>
         <div class="input-group">
@@ -188,6 +198,27 @@
     </footer>
 
     <script>
+                $(document).ready(function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const circleId = urlParams.get('circleId');
+            const userId = localStorage.getItem('loggedInUser');
+
+            if (!circleId || !userId) {
+                $('#analyticsData').text('Invalid access.').css('color', 'red');
+                return;
+            }
+
+            let circles = JSON.parse(localStorage.getItem(`circles_${userId}`)) || [];
+            const circle = circles.find(c => c.id == circleId);
+
+            if (circle) {
+                $('#circleName').text(circle.name);
+                // Here you can fetch and display analytics data
+                $('#analyticsData').html('<p>Analytics data for contributions, trends, etc., will be displayed here.</p>');
+            } else {
+                $('#analyticsData').text('Circle not found.').css('color', 'red');
+            }
+        });
         $(document).ready(function () {
             const urlParams = new URLSearchParams(window.location.search);
             const circleId = urlParams.get('circleId');
@@ -236,82 +267,73 @@
                                 <td style="color: #ffffff;">$${contribution.amount}</td>
                             </tr>`;
                             contributionList.append(row);
+
+                            // Prepare data for chart
                             contributionData.push(contribution.amount);
                             memberNames.push(contribution.member);
                         });
-
-                        // Create chart
-                        createChart(memberNames, contributionData);
-                    } else {
-                        contributionList.append('<tr><td colspan="2" class="text-center" style="color: #ffffff;">No contributions logged yet.</td></tr>');
                     }
-                } else {
-                    alert("Circle not found.");
-                    window.location.href = "dashboard.html"; // Redirect if circle not found
-                }
-            }
 
-            function createChart(labels, data) {
-                const ctx = document.getElementById('contributionChart').getContext('2d');
-                const contributionChart = new Chart(ctx, {
-                    type: 'pie', // Change to pie chart
-                    data: {
-                        labels: labels.length > 0 ? labels : ['No contributions'],
-                        datasets: [{
-                            label: 'Contributions',
-                            data: data.length > 0 ? data : [0],
-                            backgroundColor: [
-                                'rgba(77, 201, 255, 0.7)',
-                                'rgba(255, 159, 64, 0.7)',
-                                'rgba(75, 192, 192, 0.7)',
-                                'rgba(153, 102, 255, 0.7)',
-                                'rgba(255, 99, 132, 0.7)',
-                                'rgba(255, 206, 86, 0.7)',
-                            ],
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'top',
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function (tooltipItem) {
-                                        return tooltipItem.label + ': $' + tooltipItem.raw; // Show amount on tooltip
-                                    }
+                    // Chart.js for contributions chart
+                    const ctx = document.getElementById('contributionChart').getContext('2d');
+                    const contributionChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: memberNames.length > 0 ? memberNames : ['No contributions yet'],
+                            datasets: [{
+                                label: 'Contributions',
+                                data: contributionData.length > 0 ? contributionData : [0],
+                                backgroundColor: '#4dc9ff',
+                                borderColor: '#1c1e24',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
                                 }
                             }
                         }
-                    }
-                });
+                    });
+
+                    // Generate invite link
+                    const baseUrl = window.location.origin;
+                    const inviteLink = `${baseUrl}/join-circle.html?circleId=${circleId}`;
+                    $('#inviteLink').val(inviteLink);
+                }
             }
+
+            $('#generateInviteButton').click(function () {
+                const baseUrl = window.location.origin;
+                const inviteLink = `${baseUrl}/join-circle.html?circleId=${circleId}`;
+                $('#inviteLink').val(inviteLink);
+                alert('Invite link generated! You can share this link with others.');
+            });
+            $('#copyInviteLink').click(function() {
+                const inviteLink = $('#inviteLink').val();
+                navigator.clipboard.writeText(inviteLink).then(() => {
+                    alert('Invite link copied to clipboard!');
+                }).catch(err => {
+                    console.error('Failed to copy invite link:', err);
+                });
+            });
 
             $('#logContributionButton').click(function () {
                 const contributorName = $('#contributorName').val();
                 const contributionAmount = parseFloat($('#contributionAmount').val());
-
-                if (!contributorName || isNaN(contributionAmount) || contributionAmount <= 0) {
-                    alert("Please enter valid contributor name and contribution amount.");
-                    return;
+                if (contributorName && !isNaN(contributionAmount) && contributionAmount > 0) {
+                    const circleIndex = circles.findIndex(circle => circle.id == circleId);
+                    if (circleIndex !== -1) {
+                        circles[circleIndex].contributions.push({ member: contributorName, amount: contributionAmount });
+                        circles[circleIndex].totalContributed = (circles[circleIndex].totalContributed || 0) + contributionAmount;
+                        circles[circleIndex].numberOfPeople = circles[circleIndex].contributions.length;
+                        localStorage.setItem(`circles_${userId}`, JSON.stringify(circles));
+                        displayAnalytics(); // Refresh analytics display
+                    }
+                } else {
+                    alert('Please enter a valid contributor name and contribution amount.');
                 }
-
-                // Add contribution to the circle
-                const selectedCircle = circles.find(circle => circle.id == circleId);
-                selectedCircle.contributions.push({ member: contributorName, amount: contributionAmount });
-                selectedCircle.totalContributed = (selectedCircle.totalContributed || 0) + contributionAmount;
-                selectedCircle.numberOfPeople = selectedCircle.contributions.length; // Update contributor count
-
-                // Update local storage
-                localStorage.setItem(`circles_${userId}`, JSON.stringify(circles));
-
-                // Clear input fields
-                $('#contributorName').val('');
-                $('#contributionAmount').val('');
-
-                // Update analytics display
-                displayAnalytics();
             });
 
             loadCirclesFromLocalStorage();
